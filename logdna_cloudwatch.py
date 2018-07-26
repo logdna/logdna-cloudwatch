@@ -31,7 +31,7 @@ def prepare(cw_log_lines, hostname=None, tags=None):
     if 'logGroup' in cw_log_lines:
         app = cw_log_lines['logGroup'].split('/')[-1]
     if 'logStream' in cw_log_lines:
-        options['hostname'] = cw_log_lines['logStream']
+        options['hostname'] = cw_log_lines['logStream'].split('/')[-1].split(']')[-1]
     if hostname is not None:
         options['hostname'] = hostname
     if tags is not None:
