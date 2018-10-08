@@ -17,8 +17,14 @@ def setup():
     key = os.environ.get('LOGDNA_KEY', None)
     hostname = os.environ.get('LOGDNA_HOSTNAME', None)
     tags = os.environ.get('LOGDNA_TAGS', None)
-    baseurl = os.environ.get('LOGDNA_URL', 'https://logs.logdna.com/logs/ingest')
+    baseurl = buildURL(os.environ.get('LOGDNA_URL', None))
     return key, hostname, tags, baseurl
+
+def buildURL(baseurl):
+    if baseurl is None:
+        return 'https://logs.logdna.com/logs/ingest'
+    else:
+        return 'https://' + baseurl
 
 def decodeEvent(event):
     cw_data = str(event['awslogs']['data'])
