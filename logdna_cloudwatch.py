@@ -4,21 +4,21 @@ import json
 import gzip
 from StringIO import StringIO
 
-LOGDNA_URL = 'https://logs.logdna.com/logs/ingest'
 MAX_LINE_LENGTH = 32000
 MAX_REQUEST_TIMEOUT = 30
 
 def lambda_handler(event, context):
-    key, hostname, tags = setup()
+    key, hostname, tags, baseurl = setup()
     cw_log_lines = decodeEvent(event)
     messages, options = prepare(cw_log_lines, hostname, tags)
-    sendLog(messages, options, key)
+    sendLog(messages, options, key, baseurl)
 
 def setup():
     key = os.environ.get('LOGDNA_KEY', None)
     hostname = os.environ.get('LOGDNA_HOSTNAME', None)
     tags = os.environ.get('LOGDNA_TAGS', None)
-    return key, hostname, tags
+    baseurl = os.environ.get('LOGDNA_URL', 'https://logs.logdna.com/logs/ingest')
+    return key, hostname, tags, baseurl
 
 def decodeEvent(event):
     cw_data = str(event['awslogs']['data'])
@@ -55,11 +55,11 @@ def sanitizeMessage(message):
             message['line'] = message['line'][:MAX_LINE_LENGTH] + ' (cut off, too long...)'
     return message
 
-def sendLog(messages, options, key=None):
+def sendLog(messages, options, key=None, baseurl):
     if key is not None:
         data = {'e': 'ls', 'ls': messages}
         requests.post(
-            url=LOGDNA_URL,
+            url=baseurl,
             json=data,
             auth=('user', key),
             params={
