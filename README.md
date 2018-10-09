@@ -15,6 +15,7 @@ The LogDNA AWS CloudWatch integration relies on [AWS Lambda](https://aws.amazon.
     * (Required) LOGDNA_KEY: LOGDNA_KEY YOUR_INGESTION_KEY_HERE
     * (Optional) LOGDNA_HOSTNAME: Alternative Host Name
     * (Optional) LOGDNA_TAGS: Comma-separated Tags
+    * (Optional) LOGDNA_URL: Your own LogDNA server, please don't set this variable if you don't understand how it works
 3. Assign an IAM user with basic execution permissions
 4. Click `Create function`
 
