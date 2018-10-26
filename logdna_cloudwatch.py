@@ -11,7 +11,7 @@ def lambda_handler(event, context):
     key, hostname, tags, baseurl = setup()
     cw_log_lines = decodeEvent(event)
     messages, options = prepare(cw_log_lines, hostname, tags)
-    sendLog(messages, options, key, baseurl)
+    send_log(messages=messages, options=options, key=key, baseurl=baseurl)
 
 def setup():
     key = os.environ.get('LOGDNA_KEY', None)
@@ -61,7 +61,7 @@ def sanitizeMessage(message):
             message['line'] = message['line'][:MAX_LINE_LENGTH] + ' (cut off, too long...)'
     return message
 
-def sendLog(messages, options, key=None, baseurl):
+def send_log(messages, options, baseurl, key=None):
     if key is not None:
         data = {'e': 'ls', 'ls': messages}
         requests.post(
