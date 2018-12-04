@@ -8,9 +8,10 @@ jobs:
           name: Create & Place a ZIP into bin
           command: |
             if [[ $(git log -1 --pretty=%B) != *"Zipped"* ]]; then
-              echo "Inside if"
-            else
-              echo "Inside else"
+              zip bin/lambda.zip logdna_cloudwatch.py
+              git add .
+              git commit -m 'Zipped'
+              git push -q https://${GITHUB_PERSONAL_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git ${CIRCLE_BRANCH} 
             fi
 workflows:
   version: 2
