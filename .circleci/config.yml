@@ -17,6 +17,8 @@ jobs:
             else
               echo "Skipping"
             fi
+  publish:
+    machine: true
     steps:
       - checkout
       - run:
@@ -38,6 +40,10 @@ workflows:
   zip_and_push:
     jobs:
       - zip:
+          filters:
+            branches:
+              only: circleci
+      - publish:
           filters:
             branches:
               only: circleci
