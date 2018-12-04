@@ -7,8 +7,11 @@ jobs:
       - run:
           name: Create & Place a ZIP into bin
           command: |
-            ls .
-            git log
+            if [[ $(git log -1 --pretty=%B) == *"Zipped"* ]]; then
+              echo "Inside if"
+            else
+              echo "Inside else"
+            fi
 workflows:
   version: 2
   zip_and_push:
