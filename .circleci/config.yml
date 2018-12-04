@@ -7,7 +7,7 @@ jobs:
       - run:
           name: Create & Place a ZIP into bin
           command: |
-            if [[ $(git log -1 --pretty=%B) == *"Zipped"* ]]; then
+            if [[ $(git log -1 --pretty=%B) != *"Zipped"* ]]; then
               echo "Inside if"
             else
               echo "Inside else"
