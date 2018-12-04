@@ -6,7 +6,9 @@ jobs:
       - checkout
       - run:
           name: Create & Place a ZIP into bin
-          command: git log
+          command: |
+            ls .
+            git log
 workflows:
   version: 2
   zip_and_push:
