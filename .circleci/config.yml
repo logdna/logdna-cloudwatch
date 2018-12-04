@@ -9,9 +9,11 @@ jobs:
           command: |
             if [[ $(git log -1 --pretty=%B) != *"Zipped"* ]]; then
               zip bin/lambda.zip logdna_cloudwatch.py
+              git config --global user.email "samir.musali@logdna.com"
+              git config --global user.name "Samir Musali"
               git add .
               git commit -m 'Zipped'
-              git push -q https://${GITHUB_PERSONAL_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git ${CIRCLE_BRANCH} 
+              git push -q https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git ${CIRCLE_BRANCH} 
             fi
 workflows:
   version: 2
