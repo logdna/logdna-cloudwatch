@@ -1,0 +1,17 @@
+version: 2
+jobs:
+  zip:
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: Create & Place a ZIP into bin
+          command: git log
+workflows:
+  version: 2
+  zip_and_push:
+    jobs:
+      - zip:
+          filters:
+            branches:
+              only: circleci
