@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  zip_publish:
+  build:
     machine: true
     steps:
       - checkout
