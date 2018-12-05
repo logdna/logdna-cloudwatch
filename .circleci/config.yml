@@ -1,49 +1,21 @@
 version: 2
 jobs:
-  zip:
+  zip_publish:
     machine: true
     steps:
       - checkout
       - run:
-          name: Create & Place a ZIP into bin
+          name: Install Dependencies
           command: |
-            if [[ $(git log -1 --pretty=%B) != *"Zipped"* ]]; then
-              zip bin/lambda.zip logdna_cloudwatch.py
-              git config --global user.email "samir.musali@logdna.com"
-              git config --global user.name "Samir Musali"
-              git add .
-              git commit -m 'Zipped'
-              git push -q https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git ${CIRCLE_BRANCH} 
-            else
-              echo "Skipping"
-            fi
-  publish:
-    machine: true
-    steps:
-      - checkout
+            sudo apt-get update
+            sudo apt-get install -y python3 python-dev python3-dev \
+              build-essential libssl-dev libffi-dev \
+              libxml2-dev libxslt1-dev zlib1g-dev python-pip
+            sudo pip install --upgrade pip
+            sudo pip install awscli
       - run:
-          name: Pushing into S3
-          command: |
-            if [[ $(git log -1 --pretty=%B) == *"Zipped"* ]]; then
-              sudo apt-get update
-              sudo apt-get install -y python3 python-dev python3-dev \
-                build-essential libssl-dev libffi-dev \
-                libxml2-dev libxslt1-dev zlib1g-dev python-pip
-              sudo pip install --upgrade pip
-              sudo pip install awscli
-              aws s3 cp bin/lambda.zip s3://repo.logdna.com/integrations/cloudwatch/lambda.zip
-            else
-              echo "Skipping"
-            fi
-workflows:
-  version: 2
-  zip_and_push:
-    jobs:
-      - zip:
-          filters:
-            branches:
-              only: circleci
-      - publish:
-          filters:
-            branches:
-              only: circleci
+          name: Create a ZIP
+          command: zip lambda.zip logdna_cloudwatch.py
+      - run:
+          name: Push into S3
+          command: aws s3 cp lambda.zip s3://repo.logdna.com/integrations/cloudwatch/lambda.zip
