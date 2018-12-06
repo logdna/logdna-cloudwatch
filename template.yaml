@@ -1,0 +1,19 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: Sends logs from Cloudwatch logs to LogDNA using a Lambda function.
+Parameters:
+  KeyIdParameter:
+    Type: String
+Resources:
+  logdnacloudwatch:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: logdna_cloudwatch.lambda_handler
+      Runtime: python2.7
+      CodeUri: .
+      Description: Sends logs from Cloudwatch logs to LogDNA using a Lambda function.
+      MemorySize: 128
+      Timeout: 3
+      Policies:
+        - KMSDecryptPolicy:
+             KeyId: !Ref KeyIdParameter
