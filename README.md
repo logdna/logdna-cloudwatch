@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/logdna/aws-cloudwatch.svg?style=svg)](https://circleci.com/gh/logdna/aws-cloudwatch)
+
 # LogDNA CloudWatch
 
 The LogDNA AWS CloudWatch integration relies on [AWS Lambda](https://aws.amazon.com/documentation/lambda/) to route your [CloudWatch Logs](http://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html) to LogDNA.
