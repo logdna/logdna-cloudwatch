@@ -9,7 +9,7 @@ The LogDNA AWS CloudWatch integration relies on [AWS Lambda](https://aws.amazon.
 * Name: `LogDNA`
 * Runtime: `Python 2.7`
 * Code entry type: `Upload a .ZIP file`
-* Upload a [.ZIP file](https://github.com/logdna/aws-cloudwatch/raw/master/bin/lambda.zip)
+* Upload a [.ZIP file](https://s3.amazonaws.com/repo.logdna.com/integrations/cloudwatch/lambda.zip)
 * Handler: `logdna_cloudwatch.lambda_handler`
 * Environment variables: 
     * (Required) LOGDNA_KEY: LOGDNA_KEY YOUR_INGESTION_KEY_HERE
