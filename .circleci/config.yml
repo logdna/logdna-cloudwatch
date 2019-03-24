@@ -9,17 +9,11 @@ jobs:
           name: Install Dependencies
           command: sudo pip install awscli
       - run:
-          name: Create ZIPs
-          command: |
-            zip lambda.zip logdna_cloudwatch.py
-            zip lambda.py.zip logdna_cloudwatch.py
-            zip lambda.js.zip logdna_cloudwatch.js
+          name: Create a ZIP
+          command: zip lambda.zip logdna_cloudwatch.py
       - run:
-          name: Push ZIPs into S3
-          command: |
-            aws s3 cp lambda.zip s3://repo.logdna.com/integrations/cloudwatch/lambda.zip
-            aws s3 cp lambda.py.zip s3://repo.logdna.com/integrations/cloudwatch/lambda.py.zip
-            aws s3 cp lambda.js.zip s3://repo.logdna.com/integrations/cloudwatch/lambda.js.zip
+          name: Push a ZIP into S3
+          command: aws s3 cp lambda.zip s3://repo.logdna.com/integrations/cloudwatch/lambda.zip
 # workflows:
 #  version: 2
 #  main:
