@@ -1,3 +1,3 @@
-**v1.0.0**:
+**1.0.0**:
  - Update the Structure
  - The First Stable Release
