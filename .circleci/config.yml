@@ -9,11 +9,18 @@ jobs:
           name: Install Dependencies
           command: sudo pip install awscli
       - run:
-          name: Create a ZIP
-          command: zip lambda.zip python/logdna_cloudwatch.py
+          name: Create ZIPs
+          command: |
+            zip lambda.zip logdna_cloudwatch.py
+            zip lambda.py.zip logdna_cloudwatch.py
+            zip lambda.js.zip logdna_cloudwatch.js
       - run:
-          name: Push ZIP into S3
-          command: aws s3 cp lambda.zip s3://repo.logdna.com/integrations/cloudwatch/lambda.zip
+          name: Push ZIPs into S3
+          command: |
+            aws s3 cp lambda.zip s3://repo.logdna.com/integrations/cloudwatch/lambda.zip
+            aws s3 cp lambda.py.zip s3://repo.logdna.com/integrations/cloudwatch/lambda.py.zip
+            aws s3 cp lambda.js.zip s3://repo.logdna.com/integrations/cloudwatch/lambda.js.zip
+'''
 workflows:
   version: 2
   main:
@@ -24,3 +31,4 @@ workflows:
               ignore: /.*/
             tags:
               only: /(?<=^[Vv]|^)(?:(?<major>(?:0|[1-9](?:(?:0|[1-9])+)*))[.](?<minor>(?:0|[1-9](?:(?:0|[1-9])+)*))[.](?<patch>(?:0|[1-9](?:(?:0|[1-9])+)*))(?:-(?<prerelease>(?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:0|[1-9](?:(?:0|[1-9])+)*))(?:[.](?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:0|[1-9](?:(?:0|[1-9])+)*)))*))?(?:[+](?<build>(?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:(?:0|[1-9])+))(?:[.](?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:(?:0|[1-9])+)))*))?)$/
+'''
