@@ -11,12 +11,13 @@ jobs:
       - run:
           name: Create a ZIP
           command: |
-            VERSION=$(git describe --abbrev=0 --tags)
-            zip lambda.${VERSION}.zip logdna_cloudwatch.py
-            cp lambda.${VERSION}.zip lambda.zip
+            zip lambda.$(git describe --abbrev=0 --tags).zip logdna_cloudwatch.py
+            cp lambda.$(git describe --abbrev=0 --tags).zip lambda.zip
       - run:
           name: Push a ZIP into S3
-          command: aws s3 cp lambda.*zip s3://repo.logdna.com/integrations/cloudwatch/
+          command: |
+            aws s3 cp lambda.zip s3://repo.logdna.com/integrations/cloudwatch/lambda.zip
+            aws s3 cp lambda.$(git describe --abbrev=0 --tags).zip s3://repo.logdna.com/integrations/cloudwatch/lambda.$(git describe --abbrev=0 --tags).zip
 # workflows:
 #  version: 2
 #  main:
