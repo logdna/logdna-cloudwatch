@@ -5,7 +5,6 @@ jobs:
       - image: circleci/python:3
     steps:
       - checkout
-      - run: pylint
       - run:
           name: Install Dependencies
           command: sudo pip install awscli
