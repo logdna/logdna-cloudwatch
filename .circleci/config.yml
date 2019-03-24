@@ -10,10 +10,13 @@ jobs:
           command: sudo pip install awscli
       - run:
           name: Create a ZIP
-          command: zip lambda.zip logdna_cloudwatch.py
+          command: |
+            VERSION=$(git describe --abbrev=0 --tags)
+            zip lambda.${VERSION}.zip logdna_cloudwatch.py
+            cp lambda.${VERSION}.zip lambda.zip
       - run:
           name: Push a ZIP into S3
-          command: aws s3 cp lambda.zip s3://repo.logdna.com/integrations/cloudwatch/lambda.zip
+          command: aws s3 cp lambda.*zip s3://repo.logdna.com/integrations/cloudwatch/lambda.zip
 # workflows:
 #  version: 2
 #  main:
