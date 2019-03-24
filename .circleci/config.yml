@@ -16,7 +16,7 @@ jobs:
             cp lambda.${VERSION}.zip lambda.zip
       - run:
           name: Push a ZIP into S3
-          command: aws s3 cp lambda.*zip s3://repo.logdna.com/integrations/cloudwatch/lambda.zip
+          command: aws s3 cp lambda.*zip s3://repo.logdna.com/integrations/cloudwatch/
 # workflows:
 #  version: 2
 #  main:
