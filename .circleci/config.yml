@@ -5,12 +5,13 @@ jobs:
       - image: circleci/python:3
     steps:
       - checkout
+      - run: pylint
       - run:
           name: Install Dependencies
           command: sudo pip install awscli
       - run:
           name: Create a ZIP
-          command: zip lambda.zip logdna_cloudwatch.py
+          command: zip lambda.zip python/logdna_cloudwatch.py
       - run:
           name: Push ZIP into S3
           command: aws s3 cp lambda.zip s3://repo.logdna.com/integrations/cloudwatch/lambda.zip
