@@ -1,8 +1,8 @@
-from botocore.vendored import requests
 import os
 import json
 import gzip
 from StringIO import StringIO
+from botocore.vendored import requests
 
 # Constants:
 MAX_LINE_LENGTH = 32000
@@ -11,7 +11,7 @@ MAX_REQUEST_TIMEOUT = 30
 # Main Handler:
 def lambda_handler(event, context):
     key, hostname, tags, baseurl = setup()
-    cw_log_lines = decodeEvent(event)
+    cw_log_lines = decode_event(event)
     messages, options = prepare(cw_log_lines, hostname, tags)
     send_log(messages=messages, options=options, key=key, baseurl=baseurl)
 
@@ -20,17 +20,17 @@ def setup():
     key = os.environ.get('LOGDNA_KEY', None)
     hostname = os.environ.get('LOGDNA_HOSTNAME', None)
     tags = os.environ.get('LOGDNA_TAGS', None)
-    baseurl = buildURL(os.environ.get('LOGDNA_URL', None))
+    baseurl = build_url(os.environ.get('LOGDNA_URL', None))
     return key, hostname, tags, baseurl
 
 # Building URL using baseurl parameter:
-def buildURL(baseurl):
+def build_url(baseurl):
     if baseurl is None:
         return 'https://logs.logdna.com/logs/ingest'
     return 'https://' + baseurl
 
 # Parsing Event:
-def decodeEvent(event):
+def decode_event(event):
     cw_data = str(event['awslogs']['data'])
     cw_logs = gzip.GzipFile(fileobj=StringIO(cw_data.decode('base64', 'strict'))).read()
     return json.loads(cw_logs)
@@ -40,10 +40,12 @@ def prepare(cw_log_lines, hostname=None, tags=None):
     messages = list()
     options = dict()
     app = 'CloudWatch'
-    meta = {'type': app}
+    meta = {
+        'type': app
+    }
     if 'logGroup' in cw_log_lines:
         app = cw_log_lines['logGroup'].split('/')[-1]
-        meta['group'] = cw_log_lines['logGroup'];
+        meta['group'] = cw_log_lines['logGroup']
     if 'logStream' in cw_log_lines:
         options['hostname'] = cw_log_lines['logStream'].split('/')[-1].split(']')[-1]
         meta['stream'] = cw_log_lines['logStream']
@@ -56,12 +58,13 @@ def prepare(cw_log_lines, hostname=None, tags=None):
             'line': cw_log_line['message'],
             'timestamp': cw_log_line['timestamp'],
             'file': app,
-            'meta': meta}
-        messages.append(sanitizeMessage(message))
+            'meta': meta
+        }
+        messages.append(sanitize_message(message))
     return messages, options
 
 # Polishing the Message:
-def sanitizeMessage(message):
+def sanitize_message(message):
     if message and message['line']:
         if len(message['line']) > MAX_LINE_LENGTH:
             message['line'] = message['line'][:MAX_LINE_LENGTH] + ' (cut off, too long...)'
