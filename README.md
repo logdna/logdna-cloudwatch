@@ -27,7 +27,7 @@ You have the option of connecting your AWS CloudWatch Log Groups within the Lamb
 
 ### In Lambda Function
 1. Add CloudWatch Logs as a Trigger and click it to Configure:
-![Configure](https://drive.google.com/open?id=1fGs26SCEGsFda5kwLj74u72ypRg43Sqx)
+![Configure](https://i.imgur.com/hCCgZ2m.png)
 2. Select the CloudWatch Log Group to be sent to LogDNA
 3. Choose your own 'Filter name' and make sure 'Enable trigger' is checked.
 4. Repeat steps 1-3 to add multiple log groups.
@@ -43,7 +43,7 @@ You have the option of connecting your AWS CloudWatch Log Groups within the Lamb
 In your Lambda function console, you can configure a test event to see if your Lambda function was set up correctly:
 
 1. Select **Configure test events**:
-![Configure](https://drive.google.com/open?id=1c61fDFHqOx1OhE_8ArTnOloO3DZPqEgk)
+![Configure](https://i.imgur.com/SwlMZej.png)
 2. Create a new test event and select the Event template `Hello World` and name your test
 3. Replace the sample event data with this:
 ```js
@@ -55,10 +55,18 @@ In your Lambda function console, you can configure a test event to see if your L
 ```
 4. Hit `Test`
 5. If execution succeeded, you will see a message similar to this:
-![Success](https://drive.google.com/open?id=16ZwmatoxU_bhfKwKH8wTS5fjcwQlby6C)
+![Success](https://i.imgur.com/xMCPSm3.png)
 If you see errors, the most common one is not adding in the ingestion key in the [environment variables](https://docs.logdna.com/docs/cloudwatch#section-configure-the-logdna-aws-lambda-function):
+<p class="callout danger">
+	Execution result: failed
+	```js
+	{
+	   "errorMessage": "Please, Provide LogDNA Ingestion Key!"
+	}
+	```
+</p>
 6. [Log in to your LogDNA console](https://logdna.com/sign-in/) to see the log line coming from your Lambda function test:
-![Dashboard](https://drive.google.com/open?id=1Fg7EI_XFZE8iRh6AockhYiUnILDize45)
+![Dashboard](https://i.imgur.com/P504rGi.png)
 
 ## Configure your AWS CloudWatch Stream
 
