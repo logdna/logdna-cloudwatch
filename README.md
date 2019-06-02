@@ -9,12 +9,12 @@ The LogDNA AWS CloudWatch integration relies on [AWS Lambda](https://aws.amazon.
 1. Create a [new Lambda function](https://console.aws.amazon.com/lambda) and select `Author from scratch`
 2. For the basic information:
  * Function Name: `logdna_cloudwatch` (you can choose what to name it)
- * Runtime: `Node.js.10.x`
+ * Runtime: `Node.js.10.x` (`Python 2.7` if using in `Python`)
 3. Click on the lambda function to edit the details
  * Code entry type: `Upload a .ZIP file `
- * Upload our LogDNA lambda function [.ZIP file](https://s3.amazonaws.com/repo.logdna.com/integrations/lambdas/logdna_cloudwatchlogs.zip)
- * Handler: `index.handler`
- * Runtime: `Node.js.10.x`
+ * Upload our LogDNA Lambda function [.ZIP File](https://s3.amazonaws.com/repo.logdna.com/integrations/lambdas/logdna_cloudwatchlogs.zip) (or [Python Version](https://s3.amazonaws.com/repo.logdna.com/integrations/cloudwatch/lambda.zip) if using in `Python`)
+ * Handler: `index.handler` (`logdna_cloudwatch.lambda_handler` if using in `Python`)
+ * Runtime: `Node.js.10.x` (`Python 2.7` if using in `Python`)
  * Environment variables: 
     `LOGDNA_KEY`: YOUR_INGESTION_KEY_HERE   (Required) 
     `LOGDNA_HOSTNAME`: Alternative Host Name (Optional)  
@@ -65,13 +65,6 @@ If you see errors, the most common one is not adding in the ingestion key in the
 
 6. [Log in to your LogDNA console](https://logdna.com/sign-in/) to see the log line coming from your Lambda function test:
 ![Dashboard](https://i.imgur.com/P504rGi.png)
-
-## Configure your AWS CloudWatch Stream
-
-1. Select the CloudWatch Log Group to upload to LogDNA
-2. Click the Actions menu and select `Stream to AWS Lambda`
-3. Select the `LogDNA` Lambda function and click `Next`
-4. Select the desired log format and click `Start Streaming`
 
 ## Contributing
 
