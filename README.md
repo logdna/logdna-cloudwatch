@@ -46,7 +46,7 @@ In your Lambda function console, you can configure a test event to see if your L
 ![Configure](https://i.imgur.com/SwlMZej.png)
 2. Create a new test event and select the Event template `Hello World` and name your test
 3. Replace the sample event data with this:
-```js
+```
 {
     “awslogs”: {
         “data”: “H4sIAAAAAAAAEzWQQW+DMAyF/wrKmaEkJCbhhjbWCzuBtMNUVSmkNBIQRMKqqep/X6Cb5Ivfs58++45G7ZzqdfMza5Sjt6IpTh9lXReHEsXI3ia9BJnQlHHIhMSEBnmw/WGx6xwcp8Z50M9uN2q/aDUGx2vn/5oYufXs2sXM3tjp3QxeLw7lX6hS47lTz6lTO9i1uynfXkOMe5lsp9Fxzyy/9eS3hTsyXYhOGVCaEsBSgsyEYBkGzrDMAIMQlAq+gQIQSjFhBFgqJOUMAog34WAfoFFOOM8kA0Y5SSH+f0SIb67GRaHq/baosn1UmUlHF7tErxvk5wa56b2Z+iRJ0OP4+AWj9ITzSgEAAA==”
@@ -57,14 +57,13 @@ In your Lambda function console, you can configure a test event to see if your L
 5. If execution succeeded, you will see a message similar to this:
 ![Success](https://i.imgur.com/xMCPSm3.png)
 If you see errors, the most common one is not adding in the ingestion key in the [environment variables](https://docs.logdna.com/docs/cloudwatch#section-configure-the-logdna-aws-lambda-function):
-<p class="callout danger">
-	Execution result: failed
-	```js
+> **Execution result: failed**
+> ```
 	{
 	   "errorMessage": "Please, Provide LogDNA Ingestion Key!"
 	}
 	```
-</p>
+
 6. [Log in to your LogDNA console](https://logdna.com/sign-in/) to see the log line coming from your Lambda function test:
 ![Dashboard](https://i.imgur.com/P504rGi.png)
 
