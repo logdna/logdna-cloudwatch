@@ -57,12 +57,11 @@ In your Lambda function console, you can configure a test event to see if your L
 5. If execution succeeded, you will see a message similar to this:
 ![Success](https://i.imgur.com/xMCPSm3.png)
 If you see errors, the most common one is not adding in the ingestion key in the [environment variables](https://docs.logdna.com/docs/cloudwatch#section-configure-the-logdna-aws-lambda-function):
-> **Execution result: failed**
-> ```
-	{
-	   "errorMessage": "Please, Provide LogDNA Ingestion Key!"
-	}
-	```
+```
+{
+	"errorMessage": "Please, Provide LogDNA Ingestion Key!"
+}
+```
 
 6. [Log in to your LogDNA console](https://logdna.com/sign-in/) to see the log line coming from your Lambda function test:
 ![Dashboard](https://i.imgur.com/P504rGi.png)
