@@ -1,31 +1,73 @@
 version: 2
 jobs:
-  build:
+  publish_python:
     docker:
-      - image: circleci/python:3
+      - image: circleci/python:3.5
+    steps:
+      - checkout
+      - run: sudo pip install awscli
+      - run: cd python && zip lambda.zip logdna_cloudwatch.py
+      - run: aws s3 cp python/lambda.zip s3://repo.logdna.com/integrations/cloudwatch/lambda.zip
+  test_nodejs:
+    docker:
+      - image: circleci/node:10
+    steps:
+      - checkout
+      - run: cd node.js && npm install .
+      - run: cd node.js && npm install jest eslint --no-save .
+      - run: cd node.js && node_modules/.bin/jest tests/
+      - run: cd node.js && node_modules/.bin/eslint index.js
+  build_nodejs:
+    docker:
+      - image: circleci/node:10
     steps:
       - checkout
       - run:
-          name: Install Dependencies
-          command: sudo pip install awscli
-      - run:
-          name: Create a ZIP
+          name: Build CloudWatchLogs
           command: |
-            cd python
-            zip lambda.$(git describe --abbrev=0 --tags).zip logdna_cloudwatch.py
-            cp lambda.$(git describe --abbrev=0 --tags).zip lambda.zip
-      - run:
-          name: Push a ZIP into S3
-          command: |
-            aws s3 cp python/lambda.zip s3://repo.logdna.com/integrations/cloudwatch/lambda.zip
-            aws s3 cp python/lambda.$(git describe --abbrev=0 --tags).zip s3://repo.logdna.com/integrations/cloudwatch/lambda.$(git describe --abbrev=0 --tags).zip
+            cd ./node.js && npm install .
+            zip logdna_cloudwatchlogs.zip -r node_modules/ index.js constants.js
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./node.js/logdna_cloudwatchlogs.zip
+  publish_nodejs:
+    docker:
+      - image: circleci/python:3.5
+    steps:
+      - attach_workspace:
+          at: .
+      - run: sudo pip install awscli
+      - run: aws s3 cp ./node.js/logdna_cloudwatchlogs.zip s3://repo.logdna.com/integrations/lambdas/logdna_cloudwatchlogs.zip
 workflows:
   version: 2
-  main:
+  publish:
     jobs:
-      - build:
+      - publish_python:
           filters:
             branches:
               ignore: /.*/
             tags:
-              only: /(?<=^[Vv]|^)(?:(?<major>(?:0|[1-9](?:(?:0|[1-9])+)*))[.](?<minor>(?:0|[1-9](?:(?:0|[1-9])+)*))[.](?<patch>(?:0|[1-9](?:(?:0|[1-9])+)*))(?:-(?<prerelease>(?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:0|[1-9](?:(?:0|[1-9])+)*))(?:[.](?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:0|[1-9](?:(?:0|[1-9])+)*)))*))?(?:[+](?<build>(?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:(?:0|[1-9])+))(?:[.](?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:(?:0|[1-9])+)))*))?)$/
+              only: /^publish(-python)?$/
+      - test_nodejs:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^publish(-nodejs)?$/
+      - build_nodejs:
+          requires:
+            - test_nodejs
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^publish(-nodejs)?$/
+      - publish_nodejs:
+          requires:
+            - build_nodejs
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^publish(-nodejs)?$/

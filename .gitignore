@@ -1,0 +1,11 @@
+# No Package Lock
+**/package-lock.json
+
+# No Temporary File
+**/*.swp
+
+# No NPM Modules
+**/node_modules
+
+# No ZIP Files
+**/*.zip
