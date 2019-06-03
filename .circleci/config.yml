@@ -2,7 +2,7 @@ version: 2
 jobs:
   publish_python:
     docker:
-      - image: circleci/python:3.5
+      - image: circleci/python:2.7
     steps:
       - checkout
       - run: sudo pip install awscli

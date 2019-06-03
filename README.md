@@ -9,17 +9,17 @@ The LogDNA AWS CloudWatch integration relies on [AWS Lambda](https://aws.amazon.
 1. Create a [new Lambda function](https://console.aws.amazon.com/lambda) and select `Author from scratch`
 2. For the basic information:
  * Function Name: `logdna_cloudwatch` (you can choose what to name it)
- * Runtime: `Node.js.10.x` (`Python 2.7` if using in `Python`)
+ * Runtime: `Node.js.10.x` (`Python 2.7` if using `Python`)
 3. Click on the lambda function to edit the details
  * Code entry type: `Upload a .ZIP file `
- * Upload our LogDNA Lambda function [.ZIP File](https://s3.amazonaws.com/repo.logdna.com/integrations/lambdas/logdna_cloudwatchlogs.zip) (or [Python Version](https://s3.amazonaws.com/repo.logdna.com/integrations/cloudwatch/lambda.zip) if using in `Python`)
- * Handler: `index.handler` (`logdna_cloudwatch.lambda_handler` if using in `Python`)
- * Runtime: `Node.js.10.x` (`Python 2.7` if using in `Python`)
+ * Upload our LogDNA Lambda function [.ZIP File](https://s3.amazonaws.com/repo.logdna.com/integrations/lambdas/logdna_cloudwatchlogs.zip) (or [Python Version](https://s3.amazonaws.com/repo.logdna.com/integrations/cloudwatch/lambda.zip) if using `Python`)
+ * Handler: `index.handler` (`logdna_cloudwatch.lambda_handler` if using `Python`)
+ * Runtime: `Node.js.10.x` (`Python 2.7` if using `Python`)
  * Environment variables: 
-    `LOGDNA_KEY`: YOUR_INGESTION_KEY_HERE   (Required) 
-    `LOGDNA_HOSTNAME`: Alternative Host Name (Optional)  
-    `LOGDNA_TAGS`: Comma-separated Tags (Optional)  
-    `BASE_URL`: Custom Ingestion URL (Optional)
+    `LOGDNA_KEY`: YOUR_INGESTION_KEY_HERE *(Required)* 
+    `LOGDNA_HOSTNAME`: Alternative Host Name *(Optional)*  
+    `LOGDNA_TAGS`: Comma-separated Tags *(Optional)*  
+    `BASE_URL`: Custom Ingestion URL *(Optional)*
 4. For Execution role, assign an [IAM user with basic execution permissions](https://docs.aws.amazon.com/IAM/latest/UserGuide/getting-started_create-admin-group.html) by choosing an existing role and selecting a role that has permissions to upload logs to Amazon CloudWatch logs.
 
 ### Configure your AWS CloudWatch Log Group
@@ -54,7 +54,7 @@ In your Lambda function console, you can configure a test event to see if your L
 }
 ```
 4. Hit `Test`
-5. If execution succeeded, you will see a message similar to this:
+5. If execution succeeds, you will see a message similar to this:
 ![Success](https://i.imgur.com/xMCPSm3.png)
 If you see errors, the most common one is not adding in the ingestion key in the [environment variables](https://docs.logdna.com/docs/cloudwatch#section-configure-the-logdna-aws-lambda-function):
 ```
@@ -63,7 +63,7 @@ If you see errors, the most common one is not adding in the ingestion key in the
 }
 ```
 
-6. [Log in to your LogDNA console](https://logdna.com/sign-in/) to see the log line coming from your Lambda function test:
+6. [Log in to your LogDNA console](https://logdna.com/sign-in/) to see the log line from your Lambda function test:
 ![Dashboard](https://i.imgur.com/P504rGi.png)
 
 ## Contributing

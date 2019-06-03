@@ -1,39 +1,40 @@
-// External Libraries:
+// External Libraries
 const agent = require('agentkeepalive');
 const request = require('request');
 
-// Internal Libraries:
+// Internal Libraries
 const constants = require('./constants');
 
-// Getting Environment Variables:
+// Getting Configuration from Environment Variables
 const getConfig = () => {
-    var config = {};
+    let config = {};
 
     if (process.env.LOGDNA_KEY) config.key = process.env.LOGDNA_KEY;
     if (process.env.LOGDNA_HOSTNAME) config.hostname = process.env.LOGDNA_HOSTNAME;
 
     if (process.env.LOGDNA_TAGS && process.env.LOGDNA_TAGS.length > 0) {
-        config.tags = process.env.LOGDNA_TAGS.split(',').map(tag => tag.trim()).join(',');
+        config.tags = process.env.LOGDNA_TAGS.split(',').map((tag) => tag.trim()).join(',');
     }
 
     return config;
 };
 
-// Message Sanity Check:
-const sanitizeMessage = message => {
-    var sanitized = message.substring(0, constants.MAX_LINE_LENGTH);
-    if (sanitized !== message) sanitized += ' (cut off, too long...)';
-    return sanitized;
+// Message Sanity Check
+const sanitizeMessage = (message) => {
+    if (message.length > constants.MAX_LINE_LENGTH) {
+        return message.substring(0, constants.MAX_LINE_LENGTH) + ' (truncated)';
+    }
+    return message;
 };
 
-// Parsing the gzipped Log Data:
-const parseEvent = event => {
+// Parsing the GZipped Log Data
+const parseEvent = (event) => {
     return JSON.parse(require('zlib').unzipSync(Buffer.from(event.awslogs.data, 'base64')));
 };
 
-// Preparing the Messages and Options:
-const prepareLogs = eventData => {
-    return eventData.logEvents.map(event => {
+// Preparing the Messages and Options
+const prepareLogs = (eventData) => {
+    return eventData.logEvents.map((event) => {
         return {
             line: JSON.stringify({
                 message: sanitizeMessage(event.message)
@@ -41,11 +42,13 @@ const prepareLogs = eventData => {
                 , event: {
                     type: eventData.messageType
                     , id: event.id
-                }, log: {
+                }
+                , log: {
                     group: eventData.logGroup
                     , stream: eventData.logStream
                 }
-            }), timestamp: event.timestamp
+            })
+            , timestamp: event.timestamp
             , file: eventData.logStream
             , meta: {
                 owner: eventData.owner
@@ -55,15 +58,15 @@ const prepareLogs = eventData => {
     });
 };
 
-// Shipping the Logs:
+// Shipping the Logs
 const send = (payload, config, callback) => {
-    // Checking for Ingestion Key:
+    // Checking for Ingestion Key
     if (!config.key) return callback('Please, Provide LogDNA Ingestion Key!');
 
-    // Setting Hostname:
+    // Setting Hostname
     const hostname = config.hostname || JSON.parse(payload[0].line).log.group;
 
-    // Request Options:
+    // Request Options
     const options = {
         url: constants.BASE_URL
         , qs: config.tags ? {
@@ -71,15 +74,19 @@ const send = (payload, config, callback) => {
             , hostname: hostname
         } : {
             hostname: hostname
-        }, method: 'POST'
+        }
+        , method: 'POST'
         , body: JSON.stringify({
             e: 'ls'
             , ls: payload
-        }), auth: {
+        })
+        , auth: {
             username: config.key
-        }, headers: {
+        }
+        , headers: {
             'Content-Type': 'application/json; charset=UTF-8'
-        }, timeout: constants.MAX_REQUEST_TIMEOUT
+        }
+        , timeout: constants.MAX_REQUEST_TIMEOUT
         , withCredentials: false
         , agent: new agent.HttpsAgent({
             maxSockets: constants.MAX_SOCKETS
@@ -88,15 +95,17 @@ const send = (payload, config, callback) => {
         })
     };
 
-    // Ship the Logs:
+    // Flushing the Logs
     require('async').retry({
         times: constants.MAX_REQUEST_RETRIES
         , interval: constants.REQUEST_RETRY_INTERVAL
-        , errorFilter: err => err.code === 'ETIMEDOUT' || err.code === 'ESOCKETTIMEDOUT'
-    }, cb => {
+        , errorFilter: (err) => {
+            return err.code === 'ETIMEDOUT' || err.code === 'ESOCKETTIMEDOUT';
+        }
+    }, (reqCallback) => {
         return request(options, (error, response, body) => {
-            if (error) return cb(error);
-            return cb(null, body);
+            if (error) return reqCallback(error);
+            return reqCallback(null, body);
         });
     }, (error, result) => {
         if (error) return callback(error);
@@ -104,11 +113,7 @@ const send = (payload, config, callback) => {
     });
 };
 
-// Main Handler:
+// Main Handler
 exports.handler = (event, context, callback) => {
-    const config = getConfig(event)
-        , eventData = parseEvent(event)
-        , payload = prepareLogs(eventData);
-
-    return send(payload, config, callback);
+    return send(prepareLogs(parseEvent(event)), getConfig(event), callback);
 };

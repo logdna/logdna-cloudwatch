@@ -30,7 +30,6 @@
         "consistent-this": [2, "that"],
         "curly": [2, "multi-line"],
         "default-case": 0,
-        "dot-location": [2, "property"],
         "dot-notation": [1, {
             "allowKeywords": true
         }],
