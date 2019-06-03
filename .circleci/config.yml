@@ -48,13 +48,13 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /^publish(-python)?$/
+              only: /^(python)?\.[0-9]{10}$/
       - test_nodejs:
           filters:
             branches:
               ignore: /.*/
             tags:
-              only: /^publish(-nodejs)?$/
+              only: /^(nodejs)?\.[0-9]{10}$/
       - build_nodejs:
           requires:
             - test_nodejs
@@ -62,7 +62,7 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /^publish(-nodejs)?$/
+              only: /^(nodejs)?\.[0-9]{10}$/
       - publish_nodejs:
           requires:
             - build_nodejs
@@ -70,4 +70,4 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /^publish(-nodejs)?$/
+              only: /^(nodejs)?\.[0-9]{10}$/
