@@ -1,6 +1,6 @@
 // External Libraries
 const agent = require('agentkeepalive');
-const async = require('async');
+const retry = require('async').retry;
 const request = require('request');
 
 // Constants
@@ -102,7 +102,7 @@ const send = (payload, config, callback) => {
     };
 
     // Flushing the Logs
-    async.retry({
+    retry({
         times: MAX_REQUEST_RETRIES
         , interval: REQUEST_RETRY_INTERVAL
         , errorFilter: (err) => {
