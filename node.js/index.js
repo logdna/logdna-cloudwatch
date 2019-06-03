@@ -1,9 +1,16 @@
 // External Libraries
 const agent = require('agentkeepalive');
+const async = require('async');
 const request = require('request');
 
-// Internal Libraries
-const constants = require('./constants');
+// Constants
+const MAX_LINE_LENGTH = parseInt(process.env.LOGDNA_MAX_LINE_LENGTH) || 32000;
+const MAX_REQUEST_TIMEOUT = parseInt(process.env.LOGDNA_MAX_REQUEST_TIMEOUT) || 300;
+const MAX_SOCKETS = parseInt(process.env.LOGDNA_MAX_SOCKETS) || 20;
+const FREE_SOCKET_TIMEOUT = parseInt(process.env.LOGDNA_FREE_SOCKET_TIMEOUT) || 300000;
+const BASE_URL = process.env.LOGDNA_URL || 'https://logs.logdna.com/logs/ingest';
+const MAX_REQUEST_RETRIES = parseInt(process.env.LOGDNA_MAX_REQUEST_RETRIES) || 5;
+const REQUEST_RETRY_INTERVAL = parseInt(process.env.LOGDNA_REQUEST_RETRY_INTERVAL) || 100;
 
 // Getting Configuration from Environment Variables
 const getConfig = () => {
@@ -11,7 +18,6 @@ const getConfig = () => {
 
     if (process.env.LOGDNA_KEY) config.key = process.env.LOGDNA_KEY;
     if (process.env.LOGDNA_HOSTNAME) config.hostname = process.env.LOGDNA_HOSTNAME;
-
     if (process.env.LOGDNA_TAGS && process.env.LOGDNA_TAGS.length > 0) {
         config.tags = process.env.LOGDNA_TAGS.split(',').map((tag) => tag.trim()).join(',');
     }
@@ -21,8 +27,8 @@ const getConfig = () => {
 
 // Message Sanity Check
 const sanitizeMessage = (message) => {
-    if (message.length > constants.MAX_LINE_LENGTH) {
-        return message.substring(0, constants.MAX_LINE_LENGTH) + ' (truncated)';
+    if (message.length > MAX_LINE_LENGTH) {
+        return message.substring(0, MAX_LINE_LENGTH) + ' (truncated)';
     }
     return message;
 };
@@ -68,7 +74,7 @@ const send = (payload, config, callback) => {
 
     // Request Options
     const options = {
-        url: constants.BASE_URL
+        url: BASE_URL
         , qs: config.tags ? {
             tags: config.tags
             , hostname: hostname
@@ -86,19 +92,19 @@ const send = (payload, config, callback) => {
         , headers: {
             'Content-Type': 'application/json; charset=UTF-8'
         }
-        , timeout: constants.MAX_REQUEST_TIMEOUT
+        , timeout: MAX_REQUEST_TIMEOUT
         , withCredentials: false
         , agent: new agent.HttpsAgent({
-            maxSockets: constants.MAX_SOCKETS
+            maxSockets: MAX_SOCKETS
             , keepAlive: true
-            , freeSocketTimeout: constants.FREE_SOCKET_TIMEOUT
+            , freeSocketTimeout: FREE_SOCKET_TIMEOUT
         })
     };
 
     // Flushing the Logs
-    require('async').retry({
-        times: constants.MAX_REQUEST_RETRIES
-        , interval: constants.REQUEST_RETRY_INTERVAL
+    async.retry({
+        times: MAX_REQUEST_RETRIES
+        , interval: REQUEST_RETRY_INTERVAL
         , errorFilter: (err) => {
             return err.code === 'ETIMEDOUT' || err.code === 'ESOCKETTIMEDOUT';
         }

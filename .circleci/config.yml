@@ -8,15 +8,6 @@ jobs:
       - run: sudo pip install awscli
       - run: cd python && zip lambda.zip logdna_cloudwatch.py
       - run: aws s3 cp python/lambda.zip s3://repo.logdna.com/integrations/cloudwatch/lambda.zip
-  test_nodejs:
-    docker:
-      - image: circleci/node:10
-    steps:
-      - checkout
-      - run: cd node.js && npm install .
-      - run: cd node.js && npm install jest eslint --no-save .
-      - run: cd node.js && node_modules/.bin/jest tests/
-      - run: cd node.js && node_modules/.bin/eslint index.js
   build_nodejs:
     docker:
       - image: circleci/node:10
@@ -33,7 +24,7 @@ jobs:
             - ./node.js/logdna_cloudwatchlogs.zip
   publish_nodejs:
     docker:
-      - image: circleci/python:3.5
+      - image: circleci/python:2.7
     steps:
       - attach_workspace:
           at: .
@@ -49,15 +40,7 @@ workflows:
               ignore: /.*/
             tags:
               only: /^(python\.)?[0-9]{10}$/
-      - test_nodejs:
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^(nodejs\.)?[0-9]{10}$/
       - build_nodejs:
-          requires:
-            - test_nodejs
           filters:
             branches:
               ignore: /.*/
