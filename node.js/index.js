@@ -1,7 +1,8 @@
 // External Libraries
 const agent = require('agentkeepalive');
-const retry = require('async').retry;
+const asyncRetry = require('async').retry;
 const request = require('request');
+const zlib = require('zlib');
 
 // Constants
 const MAX_LINE_LENGTH = parseInt(process.env.LOGDNA_MAX_LINE_LENGTH) || 32000;
@@ -12,7 +13,7 @@ const BASE_URL = process.env.LOGDNA_URL || 'https://logs.logdna.com/logs/ingest'
 const MAX_REQUEST_RETRIES = parseInt(process.env.LOGDNA_MAX_REQUEST_RETRIES) || 5;
 const REQUEST_RETRY_INTERVAL = parseInt(process.env.LOGDNA_REQUEST_RETRY_INTERVAL) || 100;
 
-// Getting Configuration from Environment Variables
+// Get Configuration from Environment Variables
 const getConfig = () => {
     let config = {};
 
@@ -25,7 +26,7 @@ const getConfig = () => {
     return config;
 };
 
-// Message Sanity Check
+// Sanity Check
 const sanitizeMessage = (message) => {
     if (message.length > MAX_LINE_LENGTH) {
         return message.substring(0, MAX_LINE_LENGTH) + ' (truncated)';
@@ -33,12 +34,12 @@ const sanitizeMessage = (message) => {
     return message;
 };
 
-// Parsing the GZipped Log Data
+// Parse the GZipped Log Data
 const parseEvent = (event) => {
-    return JSON.parse(require('zlib').unzipSync(Buffer.from(event.awslogs.data, 'base64')));
+    return JSON.parse(zlib.unzipSync(Buffer.from(event.awslogs.data, 'base64')));
 };
 
-// Preparing the Messages and Options
+// Prepare the Messages and Options
 const prepareLogs = (eventData) => {
     return eventData.logEvents.map((event) => {
         return {
@@ -64,15 +65,15 @@ const prepareLogs = (eventData) => {
     });
 };
 
-// Shipping the Logs
-const send = (payload, config, callback) => {
-    // Checking for Ingestion Key
+// Ship the Logs
+const sendLine = (payload, config, callback) => {
+    // Check for Ingestion Key
     if (!config.key) return callback('Please, Provide LogDNA Ingestion Key!');
 
-    // Setting Hostname
+    // Set Hostname
     const hostname = config.hostname || JSON.parse(payload[0].line).log.group;
 
-    // Request Options
+    // Prepare HTTP Request Options
     const options = {
         url: BASE_URL
         , qs: config.tags ? {
@@ -101,8 +102,8 @@ const send = (payload, config, callback) => {
         })
     };
 
-    // Flushing the Logs
-    retry({
+    // Flush the Log
+    asyncRetry({
         times: MAX_REQUEST_RETRIES
         , interval: REQUEST_RETRY_INTERVAL
         , errorFilter: (err) => {
@@ -121,5 +122,5 @@ const send = (payload, config, callback) => {
 
 // Main Handler
 exports.handler = (event, context, callback) => {
-    return send(prepareLogs(parseEvent(event)), getConfig(event), callback);
+    return sendLine(prepareLogs(parseEvent(event)), getConfig(event), callback);
 };
