@@ -26,7 +26,7 @@ const getConfig = () => {
     return config;
 };
 
-// Sanity Check
+// Sanity Check: Truncate Long Message
 const sanitizeMessage = (message) => {
     if (message.length > MAX_LINE_LENGTH) {
         return message.substring(0, MAX_LINE_LENGTH) + ' (truncated)';
