@@ -14,6 +14,14 @@
     "aws",
     "cloudwatch"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/logdna/aws-cloudwatch.git"
+  },
   "author": "LogDNA",
-  "license": "MIT"
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/logdna/aws-cloudwatch/issues"
+  },
+  "homepage": "https://github.com/logdna/aws-cloudwatch"
 }
