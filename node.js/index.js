@@ -7,9 +7,8 @@ const zlib = require('zlib');
 // Constants
 const MAX_LINE_LENGTH = parseInt(process.env.LOGDNA_MAX_LINE_LENGTH) || 32000;
 const MAX_REQUEST_TIMEOUT = parseInt(process.env.LOGDNA_MAX_REQUEST_TIMEOUT) || 300;
-const MAX_SOCKETS = parseInt(process.env.LOGDNA_MAX_SOCKETS) || 20;
 const FREE_SOCKET_TIMEOUT = parseInt(process.env.LOGDNA_FREE_SOCKET_TIMEOUT) || 300000;
-const BASE_URL = process.env.LOGDNA_URL || 'https://logs.logdna.com/logs/ingest';
+const LOGDNA_URL = process.env.LOGDNA_URL || 'https://logs.logdna.com/logs/ingest';
 const MAX_REQUEST_RETRIES = parseInt(process.env.LOGDNA_MAX_REQUEST_RETRIES) || 5;
 const REQUEST_RETRY_INTERVAL = parseInt(process.env.LOGDNA_REQUEST_RETRY_INTERVAL) || 100;
 
@@ -68,14 +67,14 @@ const prepareLogs = (eventData) => {
 // Ship the Logs
 const sendLine = (payload, config, callback) => {
     // Check for Ingestion Key
-    if (!config.key) return callback('Please, Provide LogDNA Ingestion Key!');
+    if (!config.key) return callback('Missing LogDNA Ingestion Key');
 
     // Set Hostname
     const hostname = config.hostname || JSON.parse(payload[0].line).log.group;
 
     // Prepare HTTP Request Options
     const options = {
-        url: BASE_URL
+        url: LOGDNA_URL
         , qs: config.tags ? {
             tags: config.tags
             , hostname: hostname
@@ -96,9 +95,7 @@ const sendLine = (payload, config, callback) => {
         , timeout: MAX_REQUEST_TIMEOUT
         , withCredentials: false
         , agent: new agent.HttpsAgent({
-            maxSockets: MAX_SOCKETS
-            , keepAlive: true
-            , freeSocketTimeout: FREE_SOCKET_TIMEOUT
+            freeSocketTimeout: FREE_SOCKET_TIMEOUT
         })
     };
 
