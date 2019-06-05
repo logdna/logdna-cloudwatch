@@ -67,16 +67,6 @@ If you see errors, the most common one is not adding in the ingestion key in the
 
 The following variables can be used to tune this Lambda function for specific use cases. 
 
-'''
-const MAX_LINE_LENGTH = parseInt(process.env.LOGDNA_MAX_LINE_LENGTH) || 32000;
-const MAX_REQUEST_TIMEOUT = parseInt(process.env.LOGDNA_MAX_REQUEST_TIMEOUT) || 300;
-const MAX_SOCKETS = parseInt(process.env.LOGDNA_MAX_SOCKETS) || 20;
-const FREE_SOCKET_TIMEOUT = parseInt(process.env.LOGDNA_FREE_SOCKET_TIMEOUT) || 300000;
-const LOGDNA_URL = process.env.LOGDNA_URL || 'https://logs.logdna.com/logs/ingest';
-const MAX_REQUEST_RETRIES = parseInt(process.env.LOGDNA_MAX_REQUEST_RETRIES) || 5;
-const REQUEST_RETRY_INTERVAL = parseInt(process.env.LOGDNA_REQUEST_RETRY_INTERVAL) || 100;
-'''
-
 * **LOGDNA_MAX_LINE_LENGTH**: The maximum character length for each line, *Optional*
 	* **Default**: 32000
 * **LOGDNA_MAX_REQUEST_TIMEOUT**: Time limit (in `seconds`) for requests made by this HTTP Client, *Optional*
