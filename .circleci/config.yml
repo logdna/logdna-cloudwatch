@@ -1,14 +1,6 @@
 version: 2
 jobs:
-  publish_python:
-    docker:
-      - image: circleci/python:2.7
-    steps:
-      - checkout
-      - run: sudo pip install awscli
-      - run: cd python && zip lambda.zip logdna_cloudwatch.py
-      - run: aws s3 cp python/lambda.zip s3://repo.logdna.com/integrations/cloudwatch/lambda.zip
-  build_nodejs:
+  build:
     docker:
       - image: circleci/node:10
     steps:
@@ -22,7 +14,7 @@ jobs:
           root: .
           paths:
             - ./node.js/logdna_cloudwatchlogs.zip
-  publish_nodejs:
+  publish:
     docker:
       - image: circleci/python:2.7
     steps:
@@ -32,25 +24,19 @@ jobs:
       - run: aws s3 cp ./node.js/logdna_cloudwatchlogs.zip s3://repo.logdna.com/integrations/lambdas/logdna_cloudwatchlogs.zip
 workflows:
   version: 2
-  publish:
+  update:
     jobs:
-      - publish_python:
+      - build:
           filters:
             branches:
               ignore: /.*/
             tags:
-              only: /^(python\.)?[0-9]{10}$/
-      - build_nodejs:
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^(nodejs\.)?[0-9]{10}$/
-      - publish_nodejs:
+              only: /^[0-9]{10}$/
+      - publish:
           requires:
-            - build_nodejs
+            - build
           filters:
             branches:
               ignore: /.*/
             tags:
-              only: /^(nodejs\.)?[0-9]{10}$/
+              only: /^[0-9]{10}$/
