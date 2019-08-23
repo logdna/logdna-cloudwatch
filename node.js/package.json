@@ -8,6 +8,9 @@
     "async": "^2.6.2",
     "request": "^2.88.0"
   },
+  "scripts": {
+    "test": "mocha"
+  },
   "keywords": [
     "lambda",
     "logdna",
