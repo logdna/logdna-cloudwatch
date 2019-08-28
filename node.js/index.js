@@ -98,9 +98,6 @@ const sendLine = (payload, config, callback) => {
             freeSocketTimeout: FREE_SOCKET_TIMEOUT
         })
     };
-    console.log("kkkkkk")
-    console.log(options.url)
-    console.log(process.env.LOGDNA_URL)
     // Flush the Log
     asyncRetry({
         times: MAX_REQUEST_RETRIES
@@ -108,19 +105,14 @@ const sendLine = (payload, config, callback) => {
         , errorFilter: (err) => {
             return err.code === 'ETIMEDOUT' || err.code === 'ESOCKETTIMEDOUT';
         }
-    }, () => {
-        return request(options.url, (error, response, body) => {
-            console.log("here???")
-            console.log(error)
-            if (error) return callback(error);
-            callback(null, body);
+    }, (reqCallback) => {
+        return request(options, (error, response, body) => {
+            if (error) return reqCallback(error);
+            return reqCallback(null, body);
         });
     }, (error, result) => {
-        console.log("****")
-        console.log(result)
-        console.log(error)
         if (error) return callback(error);
-        callback(null, result);
+        return callback(null, result);
     });
 };
 
