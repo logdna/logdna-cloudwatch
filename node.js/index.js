@@ -98,6 +98,7 @@ const sendLine = (payload, config, callback) => {
             freeSocketTimeout: FREE_SOCKET_TIMEOUT
         })
     };
+
     // Flush the Log
     asyncRetry({
         times: MAX_REQUEST_RETRIES
