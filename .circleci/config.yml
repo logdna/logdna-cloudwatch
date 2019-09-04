@@ -38,7 +38,7 @@ jobs:
           name: Upload into S3
           command: |
             aws s3 cp ./logdna/logdna-cloudwatch.zip s3://repo.logdna.com/integrations/lambdas/logdna-cloudwatch.zip
-            aws s3 cp ./logdna/logdna-cloudwatch.zip s3://repo.logdna.com/integrations/lambdas/logdna-cloudwatch.$(cat ./src/VERSION.txt).zip
+            aws s3 cp ./logdna/logdna-cloudwatch.zip s3://repo.logdna.com/integrations/lambdas/logdna-cloudwatch.$(cat ./logdna/VERSION.txt).zip
 workflows:
   version: 2
   update:
