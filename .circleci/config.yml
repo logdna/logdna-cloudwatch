@@ -8,12 +8,12 @@ jobs:
       - run:
           name: Build CloudWatchLogs
           command: |
-            cd ./node.js && npm install .
+            cd ./src && npm install .
             zip logdna_cloudwatchlogs.zip -r node_modules/ index.js
       - persist_to_workspace:
           root: .
           paths:
-            - ./node.js/logdna_cloudwatchlogs.zip
+            - ./src/logdna_cloudwatchlogs.zip
   publish:
     docker:
       - image: circleci/python:2.7
@@ -21,7 +21,7 @@ jobs:
       - attach_workspace:
           at: .
       - run: sudo pip install awscli
-      - run: aws s3 cp ./node.js/logdna_cloudwatchlogs.zip s3://repo.logdna.com/integrations/lambdas/logdna_cloudwatchlogs.zip
+      - run: aws s3 cp ./src/logdna_cloudwatchlogs.zip s3://repo.logdna.com/integrations/lambdas/logdna_cloudwatchlogs.zip
 workflows:
   version: 2
   update:
