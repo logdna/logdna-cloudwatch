@@ -14,7 +14,10 @@ const REQUEST_RETRY_INTERVAL = parseInt(process.env.LOGDNA_REQUEST_RETRY_INTERVA
 
 // Get Configuration from Environment Variables
 const getConfig = () => {
-    let config = {};
+    const pkg = require('./package.json');
+    let config = {
+        UA: `${pkg.name}/${pkg.version}`
+    };
 
     if (process.env.LOGDNA_KEY) config.key = process.env.LOGDNA_KEY;
     if (process.env.LOGDNA_HOSTNAME) config.hostname = process.env.LOGDNA_HOSTNAME;
@@ -91,6 +94,7 @@ const sendLine = (payload, config, callback) => {
         }
         , headers: {
             'Content-Type': 'application/json; charset=UTF-8'
+            , 'user-agent': config.UA
         }
         , timeout: MAX_REQUEST_TIMEOUT
         , withCredentials: false
@@ -119,5 +123,5 @@ const sendLine = (payload, config, callback) => {
 
 // Main Handler
 exports.handler = (event, context, callback) => {
-    return sendLine(prepareLogs(parseEvent(event)), getConfig(event), callback);
+    return sendLine(prepareLogs(parseEvent(event)), getConfig(), callback);
 };
