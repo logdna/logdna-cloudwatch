@@ -16,17 +16,17 @@ jobs:
               echo "  PKG_VERSION: ${PKG_VERSION}"
               exit 1
             fi
-            echo ${TAG_VERSION} >> ./src/VERSION.txt
+            echo ${TAG_VERSION} >> ./logdna/VERSION.txt
       - run:
           name: Build CloudWatchLogs
           command: |
-            cd ./src && npm install .
+            cd ./logdna && npm install .
             zip logdna_cloudwatchlogs.zip -r node_modules/ index.js
       - persist_to_workspace:
           root: .
           paths:
-            - ./src/logdna_cloudwatchlogs.zip
-            - ./src/VERSION.txt
+            - ./logdna/logdna_cloudwatchlogs.zip
+            - ./logdna/VERSION.txt
   publish:
     docker:
       - image: circleci/python:2.7
@@ -37,8 +37,8 @@ jobs:
       - run:
           name: Upload into S3
           command: |
-            aws s3 cp ./src/logdna_cloudwatchlogs.zip s3://repo.logdna.com/integrations/lambdas/logdna_cloudwatchlogs.zip
-            aws s3 cp ./src/logdna_cloudwatchlogs.zip s3://repo.logdna.com/integrations/lambdas/logdna_cloudwatchlogs.$(cat ./src/VERSION.txt).zip
+            aws s3 cp ./logdna/logdna_cloudwatchlogs.zip s3://repo.logdna.com/integrations/lambdas/logdna_cloudwatchlogs.zip
+            aws s3 cp ./logdna/logdna_cloudwatchlogs.zip s3://repo.logdna.com/integrations/lambdas/logdna_cloudwatchlogs.$(cat ./src/VERSION.txt).zip
 workflows:
   version: 2
   update:
