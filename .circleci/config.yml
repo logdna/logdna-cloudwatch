@@ -21,11 +21,11 @@ jobs:
           name: Build CloudWatchLogs
           command: |
             cd ./logdna && npm install .
-            zip logdna_cloudwatchlogs.zip -r node_modules/ index.js
+            zip logdna-cloudwatch.zip -r node_modules/ index.js
       - persist_to_workspace:
           root: .
           paths:
-            - ./logdna/logdna_cloudwatchlogs.zip
+            - ./logdna/logdna-cloudwatch.zip
             - ./logdna/VERSION.txt
   publish:
     docker:
@@ -37,8 +37,8 @@ jobs:
       - run:
           name: Upload into S3
           command: |
-            aws s3 cp ./logdna/logdna_cloudwatchlogs.zip s3://repo.logdna.com/integrations/lambdas/logdna_cloudwatchlogs.zip
-            aws s3 cp ./logdna/logdna_cloudwatchlogs.zip s3://repo.logdna.com/integrations/lambdas/logdna_cloudwatchlogs.$(cat ./src/VERSION.txt).zip
+            aws s3 cp ./logdna/logdna-cloudwatch.zip s3://repo.logdna.com/integrations/lambdas/logdna-cloudwatch.zip
+            aws s3 cp ./logdna/logdna-cloudwatch.zip s3://repo.logdna.com/integrations/lambdas/logdna-cloudwatch.$(cat ./src/VERSION.txt).zip
 workflows:
   version: 2
   update:
