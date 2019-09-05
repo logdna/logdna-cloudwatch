@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/logdna/aws-cloudwatch.svg?style=svg)](https://circleci.com/gh/logdna/aws-cloudwatch)
+[![CircleCI](https://circleci.com/gh/logdna/logdna-cloudwatch.svg?style=svg)](https://circleci.com/gh/logdna/logdna-cloudwatch)
 
 # LogDNA CloudWatch
 
@@ -8,11 +8,11 @@ The LogDNA AWS CloudWatch integration relies on [AWS Lambda](https://aws.amazon.
 
 1. Create a [new Lambda function](https://console.aws.amazon.com/lambda) and select `Author from scratch`
 2. For the basic information:
- * Function Name: `logdna_cloudwatch` (you can choose what to name it)
+ * Function Name: `logdna-cloudwatch` (you can choose what to name it)
  * Runtime: `Node.js.10.x`
 3. Click on the lambda function to edit the details
  * Code entry type: `Upload a .ZIP file `
- * Upload our LogDNA Lambda function [.ZIP File](https://s3.amazonaws.com/repo.logdna.com/integrations/lambdas/logdna_cloudwatchlogs.zip)
+ * Upload our LogDNA Lambda function [.ZIP File](https://s3.amazonaws.com/repo.logdna.com/integrations/lambdas/logdna-cloudwatch.zip)
  * Handler: `index.handler`
  * Runtime: `Node.js.10.x`
  * Environment variables: 
@@ -27,7 +27,7 @@ You have the option of connecting your AWS CloudWatch Log Groups within the Lamb
 
 ### In Lambda Function
 1. Add CloudWatch Logs as a Trigger and click it to Configure:
-![Configure](https://raw.githubusercontent.com/logdna/artwork/master/aws-cloudwatch/in_lambda_1.png)
+![Configure](https://raw.githubusercontent.com/logdna/artwork/master/logdna-cloudwatch/in_lambda_1.png)
 2. Select the CloudWatch Log Group to be sent to LogDNA
 3. Choose your own 'Filter name' and make sure 'Enable trigger' is checked.
 4. Repeat steps 1-3 to add multiple log groups.
@@ -35,7 +35,7 @@ You have the option of connecting your AWS CloudWatch Log Groups within the Lamb
 ### Alternatively in CloudWatch
 1. Select the Log Group to be sent to LogDNA
 2. Select the action `Stream to AWS Lambda`
-3. Choose Destination: Select the Lambda function created above, i.e.  `logdna_cloudwatch`
+3. Choose Destination: Select the Lambda function created above, i.e.  `logdna-cloudwatch`
 4. Configure Log Format and Filters: Choose JSON as a log format
 5. Review your settings to `Start Streaming`
 
@@ -43,7 +43,7 @@ You have the option of connecting your AWS CloudWatch Log Groups within the Lamb
 In your Lambda function console, you can configure a test event to see if your Lambda function was set up correctly:
 
 1. Select **Configure test events**:
-![Configure](https://raw.githubusercontent.com/logdna/artwork/master/aws-cloudwatch/validate_1.png)
+![Configure](https://raw.githubusercontent.com/logdna/artwork/master/logdna-cloudwatch/validate_1.png)
 2. Create a new test event and select the Event template `Hello World` and name your test
 3. Replace the sample event data with this:
 ```
@@ -55,13 +55,13 @@ In your Lambda function console, you can configure a test event to see if your L
 ```
 4. Hit `Test`
 5. If execution succeeds, you will see a message similar to this:
-![Success](https://raw.githubusercontent.com/logdna/artwork/master/aws-cloudwatch/validate_5.png)
+![Success](https://raw.githubusercontent.com/logdna/artwork/master/logdna-cloudwatch/validate_5.png)
 
 If you see errors, the most common one is not adding in the ingestion key in the [environment variables](https://docs.logdna.com/docs/cloudwatch#section-configure-the-logdna-aws-lambda-function):
-![Error](https://raw.githubusercontent.com/logdna/artwork/master/aws-cloudwatch/validate_5_error.png)
+![Error](https://raw.githubusercontent.com/logdna/artwork/master/logdna-cloudwatch/validate_5_error.png)
 
 6. [Log in to your LogDNA console](https://logdna.com/sign-in/) to see the log line from your Lambda function test:
-![Dashboard](https://raw.githubusercontent.com/logdna/artwork/master/aws-cloudwatch/validate_6.png)
+![Dashboard](https://raw.githubusercontent.com/logdna/artwork/master/logdna-cloudwatch/validate_6.png)
 
 ### Optional Environment Variables
 

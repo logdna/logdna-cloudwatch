@@ -6,14 +6,27 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Check Tagged Push
+          command: |
+            TAG_VERSION=$(git tag --sort=-creatordate | head -n 1)
+            PKG_VERSION=$(cat package.json | grep version | cut -d':' -f2 | cut -d '"' -f2)
+            if [[ "${TAG_VERSION}" != "${PKG_VERSION}" ]]; then
+              echo "There is mismatch:"
+              echo "  TAG_VERSION: ${TAG_VERSION}"
+              echo "  PKG_VERSION: ${PKG_VERSION}"
+              exit 1
+            fi
+            echo ${TAG_VERSION} >> ./logdna/VERSION.txt
+      - run:
           name: Build CloudWatchLogs
           command: |
-            cd ./node.js && npm install .
-            zip logdna_cloudwatchlogs.zip -r node_modules/ index.js
+            cd ./logdna && npm install .
+            zip logdna-cloudwatch.zip -r node_modules/ index.js
       - persist_to_workspace:
           root: .
           paths:
-            - ./node.js/logdna_cloudwatchlogs.zip
+            - ./logdna/logdna-cloudwatch.zip
+            - ./logdna/VERSION.txt
   publish:
     docker:
       - image: circleci/python:2.7
@@ -21,7 +34,11 @@ jobs:
       - attach_workspace:
           at: .
       - run: sudo pip install awscli
-      - run: aws s3 cp ./node.js/logdna_cloudwatchlogs.zip s3://repo.logdna.com/integrations/lambdas/logdna_cloudwatchlogs.zip
+      - run:
+          name: Upload into S3
+          command: |
+            aws s3 cp ./logdna/logdna-cloudwatch.zip s3://repo.logdna.com/integrations/lambdas/logdna-cloudwatch.zip
+            aws s3 cp ./logdna/logdna-cloudwatch.zip s3://repo.logdna.com/integrations/lambdas/logdna-cloudwatch.$(cat ./logdna/VERSION.txt).zip
 workflows:
   version: 2
   update:
@@ -31,7 +48,7 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /^[0-9]{10}$/
+              only: /[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?/
       - publish:
           requires:
             - build
@@ -39,4 +56,4 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /^[0-9]{10}$/
+              only: /[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?/
