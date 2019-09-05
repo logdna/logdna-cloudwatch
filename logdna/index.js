@@ -16,7 +16,7 @@ const REQUEST_RETRY_INTERVAL = parseInt(process.env.LOGDNA_REQUEST_RETRY_INTERVA
 const getConfig = () => {
     const pkg = require('./package.json');
     let config = {
-        UA: `${pkg.name}/${pkg.version}`
+        UserAgent: `${pkg.name}/${pkg.version}`
     };
 
     if (process.env.LOGDNA_KEY) config.key = process.env.LOGDNA_KEY;
@@ -94,7 +94,7 @@ const sendLine = (payload, config, callback) => {
         }
         , headers: {
             'Content-Type': 'application/json; charset=UTF-8'
-            , 'user-agent': config.UA
+            , 'user-agent': config.UserAgent
         }
         , timeout: MAX_REQUEST_TIMEOUT
         , withCredentials: false
