@@ -2,6 +2,10 @@
 
 This file documents all notable changes in `LogDNA CloudWatch Lambda Function`. The release numbering uses [semantic versioning](http://semver.org).
 
+## v2.0.1 - Released on September 5, 2019
+* Added `user-agent` to `req.headers` to track the clients better
+* Added `CHANGELOG` and `Semantic Versioning`
+
 ## v2.0.0 - Released on June 5, 2019
 * Released new `Lambda Function` written/implemented on `node.js`
 * Added Retry on `ETIMEDOUT` or `ESOCKETTIMEDOUT`

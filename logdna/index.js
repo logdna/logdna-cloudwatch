@@ -47,7 +47,7 @@ const prepareLogs = (eventData) => {
         return {
             line: JSON.stringify({
                 message: sanitizeMessage(event.message)
-                , source: 'CloudWatchLogs'
+                , source: 'cloudwatch'
                 , event: {
                     type: eventData.messageType
                     , id: event.id
