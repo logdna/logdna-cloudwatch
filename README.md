@@ -69,8 +69,8 @@ The following variables can be used to tune this Lambda function for specific us
 
 * **LOGDNA_MAX_LINE_LENGTH**: The maximum character length for each line, *Optional*
 	* **Default**: 32000
-* **LOGDNA_MAX_REQUEST_TIMEOUT**: Time limit (in `seconds`) for requests made by this HTTP Client, *Optional*
-	* **Default**: 300
+* **LOGDNA_MAX_REQUEST_TIMEOUT**: Time limit (in `milliseconds`) for requests made by this HTTP Client, *Optional*
+	* **Default**: 30000
 * **LOGDNA_FREE_SOCKET_TIMEOUT**: How long (in `milliseconds`) to wait for inactivity before timing out on the free socket, *Optional*
 	* **Default**: 300000
 	* **Source**: [agentkeepalive#agentoptions](https://github.com/node-modules/agentkeepalive/blob/master/README.md#new-agentoptions)
