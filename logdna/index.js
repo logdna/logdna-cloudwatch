@@ -6,11 +6,11 @@ const zlib = require('zlib');
 
 // Constants
 const MAX_LINE_LENGTH = parseInt(process.env.LOGDNA_MAX_LINE_LENGTH) || 32000;
-const MAX_REQUEST_TIMEOUT = parseInt(process.env.LOGDNA_MAX_REQUEST_TIMEOUT) || 300;
-const FREE_SOCKET_TIMEOUT = parseInt(process.env.LOGDNA_FREE_SOCKET_TIMEOUT) || 300000;
+const MAX_REQUEST_TIMEOUT_MS = parseInt(process.env.LOGDNA_MAX_REQUEST_TIMEOUT) || 30000;
+const FREE_SOCKET_TIMEOUT_MS = parseInt(process.env.LOGDNA_FREE_SOCKET_TIMEOUT) || 300000;
 const LOGDNA_URL = process.env.LOGDNA_URL || 'https://logs.logdna.com/logs/ingest';
 const MAX_REQUEST_RETRIES = parseInt(process.env.LOGDNA_MAX_REQUEST_RETRIES) || 5;
-const REQUEST_RETRY_INTERVAL = parseInt(process.env.LOGDNA_REQUEST_RETRY_INTERVAL) || 100;
+const REQUEST_RETRY_INTERVAL_MS = parseInt(process.env.LOGDNA_REQUEST_RETRY_INTERVAL) || 100;
 
 // Get Configuration from Environment Variables
 const getConfig = () => {
@@ -96,17 +96,17 @@ const sendLine = (payload, config, callback) => {
             'Content-Type': 'application/json; charset=UTF-8'
             , 'user-agent': config.UserAgent
         }
-        , timeout: MAX_REQUEST_TIMEOUT
+        , timeout: MAX_REQUEST_TIMEOUT_MS
         , withCredentials: false
         , agent: new agent.HttpsAgent({
-            freeSocketTimeout: FREE_SOCKET_TIMEOUT
+            freeSocketTimeout: FREE_SOCKET_TIMEOUT_MS
         })
     };
 
     // Flush the Log
     asyncRetry({
         times: MAX_REQUEST_RETRIES
-        , interval: REQUEST_RETRY_INTERVAL
+        , interval: REQUEST_RETRY_INTERVAL_MS
         , errorFilter: (err) => {
             return err.code === 'ETIMEDOUT' || err.code === 'ESOCKETTIMEDOUT';
         }
