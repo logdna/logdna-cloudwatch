@@ -1,14 +1,14 @@
 version: 2
 jobs:
-  # eslint:
-  #   docker:
-  #     - image: circleci/node:10
-  #   steps:
-  #     - checkout
-  #     - run: cp .eslintrc ./logdna/.eslintrc
-  #     - run: cd ./logdna && npm install .
-  #     - run: cd ./logdna && npm install eslint
-  #     - run: cd ./logdna && npm run lint
+  eslint:
+    docker:
+      - image: circleci/node:10
+    steps:
+      - checkout
+      - run: cp .eslintrc ./logdna/.eslintrc
+      - run: cd ./logdna && npm install .
+      - run: cd ./logdna && npm install eslint
+      - run: cd ./logdna && npm run lint
   build:
     docker:
       - image: circleci/node:10
@@ -52,15 +52,15 @@ workflows:
   version: 2
   update:
     jobs:
-     # - eslint:
-     #    filters:
-     #      tags:
-     #        only: /[0-9].[0-9].[0-9]/
-     #      branches:
-     #        ignore: /.*/
+      - eslint:
+          filters:
+            tags:
+              only: /[0-9].[0-9].[0-9]/
+            branches:
+              ignore: /.*/
       - build:
-          # requires:
-          #    - eslint:
+          requires:
+            - eslint
           filters:
             branches:
               ignore: /.*/
@@ -68,17 +68,17 @@ workflows:
               only: /[0-9].[0-9].[0-9]/
       - publish:
           requires:
-            - build:
+            - build
           filters:
             branches:
               ignore: /.*/
             tags:
               only: /[0-9].[0-9].[0-9]/
-# eslint:
-#   jobs:
-#     - eslint:
-#         filters:
-#           branches:
-#             only: /.*/
-#           tags:
-#             ignore: /.*/
+  eslint:
+    jobs:
+      - eslint:
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              ignore: /.*/
