@@ -22,7 +22,7 @@ const getConfig = () => {
     if (process.env.LOGDNA_KEY) config.key = process.env.LOGDNA_KEY;
     if (process.env.LOGDNA_HOSTNAME) config.hostname = process.env.LOGDNA_HOSTNAME;
     if (process.env.LOGDNA_TAGS && process.env.LOGDNA_TAGS.length > 0) {
-        config.tags = process.env.LOGDNA_TAGS.split(',').map((tag) => tag.trim()).join(',');
+        config.tags = process.env.LOGDNA_TAGS.split(',').map(tag => tag.trim()).join(',');
     }
 
     return config;
