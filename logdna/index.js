@@ -11,7 +11,8 @@ const FREE_SOCKET_TIMEOUT_MS = parseInt(process.env.LOGDNA_FREE_SOCKET_TIMEOUT) 
 const LOGDNA_URL = process.env.LOGDNA_URL || 'https://logs.logdna.com/logs/ingest';
 const MAX_REQUEST_RETRIES = parseInt(process.env.LOGDNA_MAX_REQUEST_RETRIES) || 5;
 const REQUEST_RETRY_INTERVAL_MS = parseInt(process.env.LOGDNA_REQUEST_RETRY_INTERVAL) || 100;
-
+const DEFAULT_HTTP_ERRORS = ['ECONNRESET', 'EHOSTUNREACH', 'ETIMEDOUT', 'ESOCKETTIMEDOUT', 'ECONNREFUSED', 'ENOTFOUND'];
+const INTERNAL_SERVER_ERROR = 500;
 // Get Configuration from Environment Variables
 const getConfig = () => {
     const pkg = require('./package.json');
@@ -26,14 +27,6 @@ const getConfig = () => {
     }
 
     return config;
-};
-
-// Sanity Check: Truncate Long Message
-const sanitizeMessage = (message) => {
-    if (message.length > MAX_LINE_LENGTH) {
-        return message.substring(0, MAX_LINE_LENGTH) + ' (truncated)';
-    }
-    return message;
 };
 
 // Parse the GZipped Log Data
@@ -106,13 +99,15 @@ const sendLine = (payload, config, callback) => {
     // Flush the Log
     asyncRetry({
         times: MAX_REQUEST_RETRIES
-        , interval: REQUEST_RETRY_INTERVAL_MS
+        , interval: (retryCount) => {
+          return REQUEST_RETRY_INTERVAL_MS * Math.pow(2, retryCount);
+        }
         , errorFilter: (err) => {
-            return err.code === 'ETIMEDOUT' || err.code === 'ESOCKETTIMEDOUT';
+            return DEFAULT_HTTP_ERRORS.includes(err.code);
         }
     }, (reqCallback) => {
         return request(options, (error, response, body) => {
-            if (error) return reqCallback(error);
+            if (error || response.statusCode >== INTERNAL_SERVER_ERROR) return reqCallback(error);
             return reqCallback(null, body);
         });
     }, (error, result) => {
