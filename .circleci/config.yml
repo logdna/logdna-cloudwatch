@@ -1,6 +1,6 @@
 version: 2
 jobs:
-   eslint:
+  eslint:
     docker:
       - image: circleci/node:10
     steps:
