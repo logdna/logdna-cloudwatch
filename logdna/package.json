@@ -9,7 +9,6 @@
   "dependencies": {
     "agentkeepalive": "^4.0.2",
     "async": "^2.6.2",
-    "eslint": "^6.6.0",
     "request": "^2.88.0"
   },
   "keywords": [
