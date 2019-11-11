@@ -11,7 +11,15 @@ const FREE_SOCKET_TIMEOUT_MS = parseInt(process.env.LOGDNA_FREE_SOCKET_TIMEOUT) 
 const LOGDNA_URL = process.env.LOGDNA_URL || 'https://logs.logdna.com/logs/ingest';
 const MAX_REQUEST_RETRIES = parseInt(process.env.LOGDNA_MAX_REQUEST_RETRIES) || 5;
 const REQUEST_RETRY_INTERVAL_MS = parseInt(process.env.LOGDNA_REQUEST_RETRY_INTERVAL) || 100;
-const DEFAULT_HTTP_ERRORS = ['ECONNRESET', 'EHOSTUNREACH', 'ETIMEDOUT', 'ESOCKETTIMEDOUT', 'ECONNREFUSED', 'ENOTFOUND'];
+const DEFAULT_HTTP_ERRORS = [
+  'ECONNRESET'
+, 'EHOSTUNREACH'
+, 'ETIMEDOUT'
+, 'ESOCKETTIMEDOUT'
+, 'ECONNREFUSED'
+, 'ENOTFOUND'
+, 'INTERNAL_SERVER_ERROR'];
+
 const INTERNAL_SERVER_ERROR = 500;
 // Get Configuration from Environment Variables
 const getConfig = () => {
@@ -39,7 +47,7 @@ const prepareLogs = (eventData) => {
     return eventData.logEvents.map((event) => {
         return {
             line: JSON.stringify({
-                message: sanitizeMessage(event.message)
+                message: event.message
                 , source: 'cloudwatch'
                 , event: {
                     type: eventData.messageType
@@ -102,12 +110,19 @@ const sendLine = (payload, config, callback) => {
         , interval: (retryCount) => {
           return REQUEST_RETRY_INTERVAL_MS * Math.pow(2, retryCount);
         }
-        , errorFilter: (err) => {
-            return DEFAULT_HTTP_ERRORS.includes(err.code);
+        , errorFilter: (errCode) => {
+            console.log(errCode)
+            return DEFAULT_HTTP_ERRORS.includes(errCode);
         }
     }, (reqCallback) => {
         return request(options, (error, response, body) => {
-            if (error || response.statusCode >== INTERNAL_SERVER_ERROR) return reqCallback(error);
+            let errorCode = (error && error.code) || response.statusCode;
+            if(error) {
+              return reqCallback(error.code);
+            } else if (response.statusCode >= INTERNAL_SERVER_ERROR) {
+              return reqCallback('INTERNAL_SERVER_ERROR');
+            }
+
             return reqCallback(null, body);
         });
     }, (error, result) => {
