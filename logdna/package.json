@@ -3,6 +3,9 @@
   "version": "2.0.3",
   "description": "Lambda Functions to Stream Logs from AWS CloudWatch to LogDNA",
   "main": "index.js",
+  "scripts": {
+    "lint": "./node_modules/.bin/eslint -c .eslintrc *.js"
+  },
   "dependencies": {
     "agentkeepalive": "^4.0.2",
     "async": "^2.6.2",

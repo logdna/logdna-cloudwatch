@@ -11,7 +11,15 @@ const FREE_SOCKET_TIMEOUT_MS = parseInt(process.env.LOGDNA_FREE_SOCKET_TIMEOUT) 
 const LOGDNA_URL = process.env.LOGDNA_URL || 'https://logs.logdna.com/logs/ingest';
 const MAX_REQUEST_RETRIES = parseInt(process.env.LOGDNA_MAX_REQUEST_RETRIES) || 5;
 const REQUEST_RETRY_INTERVAL_MS = parseInt(process.env.LOGDNA_REQUEST_RETRY_INTERVAL) || 100;
+const DEFAULT_HTTP_ERRORS = [
+    'ECONNRESET'
+    , 'EHOSTUNREACH'
+    , 'ETIMEDOUT'
+    , 'ESOCKETTIMEDOUT'
+    , 'ECONNREFUSED'
+    , 'ENOTFOUND'];
 
+const INTERNAL_SERVER_ERROR = 500;
 // Get Configuration from Environment Variables
 const getConfig = () => {
     const pkg = require('./package.json');
@@ -22,18 +30,10 @@ const getConfig = () => {
     if (process.env.LOGDNA_KEY) config.key = process.env.LOGDNA_KEY;
     if (process.env.LOGDNA_HOSTNAME) config.hostname = process.env.LOGDNA_HOSTNAME;
     if (process.env.LOGDNA_TAGS && process.env.LOGDNA_TAGS.length > 0) {
-        config.tags = process.env.LOGDNA_TAGS.split(',').map((tag) => tag.trim()).join(',');
+        config.tags = process.env.LOGDNA_TAGS.split(',').map(tag => tag.trim()).join(',');
     }
 
     return config;
-};
-
-// Sanity Check: Truncate Long Message
-const sanitizeMessage = (message) => {
-    if (message.length > MAX_LINE_LENGTH) {
-        return message.substring(0, MAX_LINE_LENGTH) + ' (truncated)';
-    }
-    return message;
 };
 
 // Parse the GZipped Log Data
@@ -46,7 +46,7 @@ const prepareLogs = (eventData) => {
     return eventData.logEvents.map((event) => {
         return {
             line: JSON.stringify({
-                message: sanitizeMessage(event.message)
+                message: event.message
                 , source: 'cloudwatch'
                 , event: {
                     type: eventData.messageType
@@ -106,13 +106,20 @@ const sendLine = (payload, config, callback) => {
     // Flush the Log
     asyncRetry({
         times: MAX_REQUEST_RETRIES
-        , interval: REQUEST_RETRY_INTERVAL_MS
-        , errorFilter: (err) => {
-            return err.code === 'ETIMEDOUT' || err.code === 'ESOCKETTIMEDOUT';
+        , interval: (retryCount) => {
+            return REQUEST_RETRY_INTERVAL_MS * Math.pow(2, retryCount);
+        }
+        , errorFilter: (errCode) => {
+            return DEFAULT_HTTP_ERRORS.includes(errCode) || errCode === 'INTERNAL_SERVER_ERROR';
         }
     }, (reqCallback) => {
         return request(options, (error, response, body) => {
-            if (error) return reqCallback(error);
+            if (error) {
+                return reqCallback(error.code);
+            }
+            if (response.statusCode >= INTERNAL_SERVER_ERROR) {
+                return reqCallback('INTERNAL_SERVER_ERROR');
+            }
             return reqCallback(null, body);
         });
     }, (error, result) => {
