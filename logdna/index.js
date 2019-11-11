@@ -17,8 +17,7 @@ const DEFAULT_HTTP_ERRORS = [
     , 'ETIMEDOUT'
     , 'ESOCKETTIMEDOUT'
     , 'ECONNREFUSED'
-    , 'ENOTFOUND'
-    , 'INTERNAL_SERVER_ERROR'];
+    , 'ENOTFOUND'];
 
 const INTERNAL_SERVER_ERROR = 500;
 // Get Configuration from Environment Variables
@@ -111,17 +110,16 @@ const sendLine = (payload, config, callback) => {
             return REQUEST_RETRY_INTERVAL_MS * Math.pow(2, retryCount);
         }
         , errorFilter: (errCode) => {
-            console.log(errCode);
-            return DEFAULT_HTTP_ERRORS.includes(errCode);
+            return DEFAULT_HTTP_ERRORS.includes(errCode) || errCode === 'INTERNAL_SERVER_ERROR';
         }
     }, (reqCallback) => {
         return request(options, (error, response, body) => {
             if (error) {
                 return reqCallback(error.code);
-            } else if (response.statusCode >= INTERNAL_SERVER_ERROR) {
+            }
+            if (response.statusCode >= INTERNAL_SERVER_ERROR) {
                 return reqCallback('INTERNAL_SERVER_ERROR');
             }
-
             return reqCallback(null, body);
         });
     }, (error, result) => {
