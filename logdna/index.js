@@ -12,13 +12,13 @@ const LOGDNA_URL = process.env.LOGDNA_URL || 'https://logs.logdna.com/logs/inges
 const MAX_REQUEST_RETRIES = parseInt(process.env.LOGDNA_MAX_REQUEST_RETRIES) || 5;
 const REQUEST_RETRY_INTERVAL_MS = parseInt(process.env.LOGDNA_REQUEST_RETRY_INTERVAL) || 100;
 const DEFAULT_HTTP_ERRORS = [
-  'ECONNRESET'
-, 'EHOSTUNREACH'
-, 'ETIMEDOUT'
-, 'ESOCKETTIMEDOUT'
-, 'ECONNREFUSED'
-, 'ENOTFOUND'
-, 'INTERNAL_SERVER_ERROR'];
+    'ECONNRESET'
+    , 'EHOSTUNREACH'
+    , 'ETIMEDOUT'
+    , 'ESOCKETTIMEDOUT'
+    , 'ECONNREFUSED'
+    , 'ENOTFOUND'
+    , 'INTERNAL_SERVER_ERROR'];
 
 const INTERNAL_SERVER_ERROR = 500;
 // Get Configuration from Environment Variables
@@ -108,19 +108,19 @@ const sendLine = (payload, config, callback) => {
     asyncRetry({
         times: MAX_REQUEST_RETRIES
         , interval: (retryCount) => {
-          return REQUEST_RETRY_INTERVAL_MS * Math.pow(2, retryCount);
+            return REQUEST_RETRY_INTERVAL_MS * Math.pow(2, retryCount);
         }
         , errorFilter: (errCode) => {
-            console.log(errCode)
+            console.log(errCode);
             return DEFAULT_HTTP_ERRORS.includes(errCode);
         }
     }, (reqCallback) => {
         return request(options, (error, response, body) => {
             let errorCode = (error && error.code) || response.statusCode;
-            if(error) {
-              return reqCallback(error.code);
+            if (error) {
+                return reqCallback(error.code);
             } else if (response.statusCode >= INTERNAL_SERVER_ERROR) {
-              return reqCallback('INTERNAL_SERVER_ERROR');
+                return reqCallback('INTERNAL_SERVER_ERROR');
             }
 
             return reqCallback(null, body);
