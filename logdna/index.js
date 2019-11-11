@@ -116,7 +116,6 @@ const sendLine = (payload, config, callback) => {
         }
     }, (reqCallback) => {
         return request(options, (error, response, body) => {
-            let errorCode = (error && error.code) || response.statusCode;
             if (error) {
                 return reqCallback(error.code);
             } else if (response.statusCode >= INTERNAL_SERVER_ERROR) {
