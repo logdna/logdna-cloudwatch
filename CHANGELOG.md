@@ -2,8 +2,12 @@
 
 This file documents all notable changes in `LogDNA CloudWatch Lambda Function`. The release numbering uses [semantic versioning](http://semver.org).
 
+## v2.1.0 - Released on November 14, 2019
+* Update retry mechanism
+* Remove message truncation
+
 ## v2.0.3 - Released on November 1, 2019
-* Fix bugs: change constants values to milliseconds [commit](https://github.com/logdna/logdna-cloudwatch/commit/7a26f4730cbac052387c782ec86711a132ab7082)
+* Fix bugs: change constants values to milliseconds
 
 ## v2.0.2 - Released on September 11, 2019
 
