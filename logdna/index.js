@@ -79,11 +79,13 @@ const sendLine = (payload, config, callback) => {
         });
     }, (error, result) => {
         if (error) return callback(error);
+
         return callback(null, result);
     });
 };
 
 // Main Handler
-exports.handler = (event, callback) => {
-    return sendLine(createLogs(event), getConfig(), callback);
+exports.handler = (events, context, callback) => {
+    const logsToSend = createLogs(events);
+    return sendLine(logsToSend, getConfig(), callback);
 };
