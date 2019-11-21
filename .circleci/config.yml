@@ -8,6 +8,8 @@ jobs:
       - run: cp .eslintrc ./logdna/.eslintrc
       - run: cd ./logdna && npm install .
       - run: cd ./logdna && npm install eslint
+      - run: cd ./logdna && npm install jest
+      - run: cd ./logdna && npm install eslint-plugin-jest
       - run: cd ./logdna && npm run lint
   build:
     docker:

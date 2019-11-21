@@ -10,7 +10,6 @@ const parseEvents = (event) => {
 exports.createLogs = (events) => {
     const parsedEvents = parseEvents(events);
     return parsedEvents.logEvents.map((event) => {
-
         return {
             line: JSON.stringify({
                 message: event.message

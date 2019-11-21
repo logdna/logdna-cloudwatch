@@ -1,12 +1,13 @@
 // Internal Libraries
 const constants = require('./constants.js');
-const createLogs = require('./parsers/createLogs.js').createLogs;
+const createLogs = require('./createLogs.js').createLogs;
 const pkg = require('./package.json');
 
 // External Libraries
 const agent = require('agentkeepalive');
 const asyncRetry = require('async').retry;
 const request = require('request');
+
 
 // Get Configuration from Environment Variables
 const getConfig = () => {
@@ -26,7 +27,6 @@ const getConfig = () => {
 const sendLine = (payload, config, callback) => {
     // Check for Ingestion Key
     if (!config.key) return callback('Missing LogDNA Ingestion Key');
-
     // Set Hostname
     const hostname = config.hostname || JSON.parse(payload[0].line).log.group;
 
@@ -57,7 +57,6 @@ const sendLine = (payload, config, callback) => {
             freeSocketTimeout: constants.FREE_SOCKET_TIMEOUT_MS
         })
     };
-
     // Flush the Log
     asyncRetry({
         times: constants.MAX_REQUEST_RETRIES
@@ -87,5 +86,6 @@ const sendLine = (payload, config, callback) => {
 // Main Handler
 exports.handler = (events, context, callback) => {
     const logsToSend = createLogs(events);
-    return sendLine(logsToSend, getConfig(), callback);
+    const config = getConfig();
+    return sendLine(logsToSend, config, callback);
 };
