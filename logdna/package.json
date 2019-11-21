@@ -7,6 +7,11 @@
     "lint": "./node_modules/.bin/eslint -c .eslintrc *.js",
     "test": "./node_modules/.bin/jest"
   },
+  "dependencies": {
+    "agentkeepalive": "^4.0.2",
+    "async": "^2.6.2",
+    "request": "^2.88.0"
+  },
   "keywords": [
     "lambda",
     "logdna",
@@ -22,10 +27,5 @@
   "bugs": {
     "url": "https://github.com/logdna/logdna-cloudwatch/issues"
   },
-  "homepage": "https://github.com/logdna/logdna-cloudwatch",
-  "dependencies": {
-    "eslint": "^6.6.0",
-    "eslint-plugin-jest": "^23.0.4",
-    "jest": "^24.9.0"
-  }
+  "homepage": "https://github.com/logdna/logdna-cloudwatch"
 }
