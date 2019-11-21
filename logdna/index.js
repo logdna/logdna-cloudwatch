@@ -1,6 +1,6 @@
 // Internal Libraries
-const constants = require('./constants.js');
-const createLogs = require('./createLogs.js').createLogs;
+const constants = require('./lib/constants.js');
+const createLogs = require('./lib/createLogs.js').createLogs;
 const pkg = require('./package.json');
 
 // External Libraries
