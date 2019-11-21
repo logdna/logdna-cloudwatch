@@ -85,7 +85,5 @@ const sendLine = (payload, config, callback) => {
 
 // Main Handler
 exports.handler = (events, context, callback) => {
-    const logsToSend = createLogs(events);
-    const config = getConfig();
-    return sendLine(logsToSend, config, callback);
+    return sendLine(createLogs(events), getConfig(), callback);
 };
