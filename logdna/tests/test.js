@@ -1,8 +1,8 @@
-const index = require('../lib/index.js');
+const index = require('../index.js');
 
 let asyncRetry = require('async').retry;
 let request = require('request');
-jest.mock('async');
+// jest.mock('async');
 jest.mock('request');
 
 const testCallback = jest.fn();
