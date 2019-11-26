@@ -1,5 +1,4 @@
 // Internal Libraries
-const constants = require('./lib/js');
 const cloudWatch = require('./lib/cloudWatch.js').createLogs;
 const pkg = require('./package.json');
 
