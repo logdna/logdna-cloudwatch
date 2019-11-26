@@ -31,7 +31,7 @@ jobs:
           command: |
             cd ./logdna && rm -rf node_modules
             cd ./logdna && npm install --production
-            zip logdna-cloudwatch.zip -r node_modules/ index.js package.json
+            zip logdna-cloudwatch.zip -r node_modules/ lib/ index.js package.json
       - persist_to_workspace:
           root: .
           paths:
