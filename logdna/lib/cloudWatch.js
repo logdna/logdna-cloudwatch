@@ -4,9 +4,9 @@ const zlib = require('zlib');
 // Parse the GZipped Log Data
 const parseEvents = (event, callback) => {
     try {
-      return JSON.parse(zlib.unzipSync(Buffer.from(event.awslogs.data, 'base64')));
+        return JSON.parse(zlib.unzipSync(Buffer.from(event.awslogs.data, 'base64')));
     } catch (error) {
-      callback(error)
+        callback(error);
     }
 };
 

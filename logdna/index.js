@@ -7,7 +7,6 @@ const agent = require('agentkeepalive');
 const asyncRetry = require('async').retry;
 const request = require('request');
 
-const MAX_LINE_LENGTH = parseInt(process.env.LOGDNA_MAX_LINE_LENGTH) || 32000;
 const MAX_REQUEST_TIMEOUT_MS = parseInt(process.env.LOGDNA_MAX_REQUEST_TIMEOUT) || 30000;
 const FREE_SOCKET_TIMEOUT_MS = parseInt(process.env.LOGDNA_FREE_SOCKET_TIMEOUT) || 300000;
 const LOGDNA_URL = process.env.LOGDNA_URL || 'https://logs.logdna.com/logs/ingest';
@@ -44,13 +43,13 @@ const sendLine = (payload, config, callback) => {
     // Set Hostname
     let hostname;
     if (config.hostname) {
-      hostname = config.hostname;
+        hostname = config.hostname;
     } else {
-       try {
-         hostname = JSON.parse(payload[0].line).log.group;
-       } catch(error) {
-         return callback('Hostname is not set and payload.log.group in a bad format')
-       }
+        try {
+            hostname = JSON.parse(payload[0].line).log.group;
+        } catch (error) {
+            return callback('Hostname is not set and payload.log.group in a bad format');
+        }
     }
     // Prepare HTTP Request Options
     const options = {
