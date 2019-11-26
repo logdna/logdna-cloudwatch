@@ -7,7 +7,6 @@ jobs:
       - checkout
       - run: cp .eslintrc ./logdna/.eslintrc
       - run: cd ./logdna && npm install .
-      - run: cd ./logdna && npm install eslint jest eslint-plugin-jest
       - run: cd ./logdna && npm run lint
       - run: cd ./logdna && npm test
   build:

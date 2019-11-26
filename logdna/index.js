@@ -42,8 +42,16 @@ const sendLine = (payload, config, callback) => {
     // Check for Ingestion Key
     if (!config.key) return callback('Missing LogDNA Ingestion Key');
     // Set Hostname
-    const hostname = config.hostname || JSON.parse(payload[0].line).log.group;
-
+    let hostname;
+    if (config.hostname) {
+      hostname = config.hostname;
+    } else {
+       try {
+         hostname = JSON.parse(payload[0].line).log.group;
+       } catch(error) {
+         return callback('Hostname is not set and payload.log.group in a bad format')
+       }
+    }
     // Prepare HTTP Request Options
     const options = {
         url: LOGDNA_URL
@@ -99,5 +107,5 @@ const sendLine = (payload, config, callback) => {
 
 // Main Handler
 exports.handler = (events, context, callback) => {
-    return sendLine(cloudWatch(events), getConfig(), callback);
+    return sendLine(cloudWatch(events, callback), getConfig(), callback);
 };
