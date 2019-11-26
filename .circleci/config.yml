@@ -7,7 +7,7 @@ jobs:
       - checkout
       - run: cp .eslintrc ./logdna/.eslintrc
       - run: cd ./logdna && npm install .
-      - run: cd ./logdna && npm install eslint jest eslint-plugin-jest --no-save
+      - run: cd ./logdna && npm install eslint jest eslint-plugin-jest
       - run: cd ./logdna && npm run lint
       - run: cd ./logdna && npm test
   build:
@@ -30,7 +30,7 @@ jobs:
       - run:
           name: Build CloudWatchLogs
           command: |
-            cd ./logdna && npm install .
+            cd ./logdna && npm install --production
             zip logdna-cloudwatch.zip -r node_modules/ index.js package.json
       - persist_to_workspace:
           root: .
