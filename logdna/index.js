@@ -21,7 +21,6 @@ const DEFAULT_HTTP_ERRORS = [
     , 'ENOTFOUND'];
 const INTERNAL_SERVER_ERROR = 500;
 
-
 // Get Configuration from Environment Variables
 const getConfig = () => {
     let config = {
