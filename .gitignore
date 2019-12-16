@@ -3,9 +3,14 @@
 
 # No Temporary File
 **/*.swp
+**/.DS_Store
 
 # No NPM Modules
 **/node_modules
 
 # No ZIP Files
 **/*.zip
+
+# No Testing Materials
+**/data
+**/generateData.js
