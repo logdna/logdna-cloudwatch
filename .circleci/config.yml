@@ -1,4 +1,14 @@
-version: 2
+version: 2.1
+tagged_build_filters: &tagged_build_filters
+  branches:
+    ignore: /.*/
+  tags:
+    only: /v[0-9]+\.[0-9]+\.[0-9]+/
+test_build_filters: &test_build_filters
+  branches:
+    only: /.*/
+  tags:
+    ignore: /v[0-9]+\.[0-9]+\.[0-9]+/
 jobs:
   test:
     docker:
@@ -36,16 +46,6 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - run:
-          name: Check Tagged Push
-          command: |
-            PKG_VERSION=$(cat ./package.json | grep version | cut -d':' -f2 | cut -d '"' -f2)
-            if [[ "${CIRCLE_TAG}" != "v${PKG_VERSION}" ]]; then
-              echo "There is mismatch:"
-              echo "  TAG_VERSION: ${CIRCLE_TAG}"
-              echo "  PKG_VERSION: v${PKG_VERSION}"
-              exit 1
-            fi
       - persist_to_workspace:
           root: .
           paths:
@@ -56,16 +56,6 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - run:
-          name: Check Tagged Push
-          command: |
-            PKG_VERSION=$(cat ./package.json | grep version | cut -d':' -f2 | cut -d '"' -f2)
-            if [[ "${CIRCLE_TAG}" != "v${PKG_VERSION}" ]]; then
-              echo "There is mismatch:"
-              echo "  TAG_VERSION: ${CIRCLE_TAG}"
-              echo "  PKG_VERSION: v${PKG_VERSION}"
-              exit 1
-            fi
       - run: go get -u github.com/tcnksm/ghr
       - run:
           name: Create a Release
@@ -81,41 +71,21 @@ workflows:
   update:
     jobs:
       - test:
-          filters:
-            tags:
-              only: /v[0-9]+\.[0-9]+\.[0-9]+/
-            branches:
-              ignore: /.*/
+          filters: *tagged_build_filters
       - build:
           requires:
             - test
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /v[0-9]+\.[0-9]+\.[0-9]+/
+          filters: *tagged_build_filters
       - approve:
           type: approval
           requires:
             - build
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /v[0-9]+\.[0-9]+\.[0-9]+/
+          filters: *tagged_build_filters
       - publish:
           requires:
             - approve
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /v[0-9]+\.[0-9]+\.[0-9]+/
+          filters: *tagged_build_filters
   test:
     jobs:
       - test:
-          filters:
-            branches:
-              only: /.*/
-            tags:
-              ignore: /v[0-9]+\.[0-9]+\.[0-9]+/
+          filters: *test_build_filters
