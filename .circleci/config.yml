@@ -1,14 +1,22 @@
-version: 2
+version: 2.1
+tagged_build_filters: &tagged_build_filters
+  branches:
+    ignore: /.*/
+  tags:
+    only: /v[0-9]+\.[0-9]+\.[0-9]+/
+test_build_filters: &test_build_filters
+  branches:
+    only: /.*/
+  tags:
+    ignore: /v[0-9]+\.[0-9]+\.[0-9]+/
 jobs:
-  eslint:
+  test:
     docker:
       - image: circleci/node:10
     steps:
       - checkout
-      - run: cp .eslintrc ./logdna/.eslintrc
-      - run: cd ./logdna && npm install .
-      - run: cd ./logdna && npm install eslint
-      - run: cd ./logdna && npm run lint
+      - run: npm install
+      - run: npm run eslint
   build:
     docker:
       - image: circleci/node:10
@@ -17,68 +25,66 @@ jobs:
       - run:
           name: Check Tagged Push
           command: |
-            TAG_VERSION=$(git tag --sort=-creatordate | head -n 1)
-            PKG_VERSION=$(cat ./logdna/package.json | grep version | cut -d':' -f2 | cut -d '"' -f2)
-            if [[ "${TAG_VERSION}" != "${PKG_VERSION}" ]]; then
+            PKG_VERSION=$(cat ./package.json | grep version | cut -d '"' -f4)
+            if [[ "${CIRCLE_TAG}" != "v${PKG_VERSION}" ]]; then
               echo "There is mismatch:"
-              echo "  TAG_VERSION: ${TAG_VERSION}"
-              echo "  PKG_VERSION: ${PKG_VERSION}"
+              echo "  TAG_VERSION: ${CIRCLE_TAG}"
+              echo "  PKG_VERSION: v${PKG_VERSION}"
               exit 1
             fi
-            echo ${TAG_VERSION} >> ./logdna/VERSION.txt
       - run:
-          name: Build CloudWatchLogs
+          name: Build S3 Lambda
           command: |
-            cd ./logdna && npm install .
+            npm install --production
             zip logdna-cloudwatch.zip -r node_modules/ index.js package.json
       - persist_to_workspace:
           root: .
           paths:
-            - ./logdna/logdna-cloudwatch.zip
-            - ./logdna/VERSION.txt
-  publish:
-    docker:
-      - image: circleci/python:2.7
+            - ./logdna-cloudwatch.zip
+  approve:
+    machine: true
     steps:
       - attach_workspace:
           at: .
-      - run: sudo pip install awscli
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./logdna-cloudwatch.zip
+  publish:
+    docker:
+      - image: circleci/golang:1.12
+    steps:
+      - attach_workspace:
+          at: .
+      - run: go get -u github.com/tcnksm/ghr
       - run:
-          name: Upload into S3
+          name: Create a Release
           command: |
-            aws s3 cp ./logdna/logdna-cloudwatch.zip s3://repo.logdna.com/integrations/lambdas/logdna-cloudwatch.zip
-            aws s3 cp ./logdna/logdna-cloudwatch.zip s3://repo.logdna.com/integrations/lambdas/logdna-cloudwatch.$(cat ./logdna/VERSION.txt).zip
+            ghr \
+              -n "LogDNA CloudWatch Lambda Function ${CIRCLE_TAG}" \
+              -t ${GITHUB_TOKEN} \
+              -u ${CIRCLE_PROJECT_USERNAME} \
+              -r ${CIRCLE_PROJECT_REPONAME} \
+              -draft ${CIRCLE_TAG} ${CIRCLE_WORKING_DIRECTORY}
 workflows:
-  version: 2
   update:
     jobs:
-      - eslint:
-          filters:
-            tags:
-              only: /[0-9]+\.[0-9]+\.[0-9]+/
-            branches:
-              ignore: /.*/
+      - test:
+          filters: *tagged_build_filters
       - build:
           requires:
-            - eslint
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /[0-9]+\.[0-9]+\.[0-9]+/
-      - publish:
+            - test
+          filters: *tagged_build_filters
+      - approve:
+          type: approval
           requires:
             - build
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /[0-9]+\.[0-9]+\.[0-9]+/
-  eslint:
+          filters: *tagged_build_filters
+      - publish:
+          requires:
+            - approve
+          filters: *tagged_build_filters
+  test:
     jobs:
-      - eslint:
-          filters:
-            branches:
-              only: /.*/
-            tags:
-              ignore: /.*/
+      - test:
+          filters: *test_build_filters

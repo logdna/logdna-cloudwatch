@@ -1,11 +1,16 @@
 # No Package Lock
-**/package-lock.json
+package-lock.json
 
 # No Temporary File
-**/*.swp
+*.swp
+.DS_Store
 
 # No NPM Modules
-**/node_modules
+node_modules
 
 # No ZIP Files
-**/*.zip
+*.zip
+
+# No Testing Materials
+data
+generateData.js
