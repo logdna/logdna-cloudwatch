@@ -67,7 +67,6 @@ jobs:
               -r ${CIRCLE_PROJECT_REPONAME} \
               -draft ${CIRCLE_TAG} ${CIRCLE_WORKING_DIRECTORY}
 workflows:
-  version: 2
   update:
     jobs:
       - test:
