@@ -36,6 +36,16 @@ jobs:
     steps:
       - attach_workspace:
           at: .
+      - run:
+          name: Check Tagged Push
+          command: |
+            PKG_VERSION=$(cat ./package.json | grep version | cut -d':' -f2 | cut -d '"' -f2)
+            if [[ "${CIRCLE_TAG}" != "v${PKG_VERSION}" ]]; then
+              echo "There is mismatch:"
+              echo "  TAG_VERSION: ${CIRCLE_TAG}"
+              echo "  PKG_VERSION: v${PKG_VERSION}"
+              exit 1
+            fi
       - persist_to_workspace:
           root: .
           paths:
@@ -46,6 +56,16 @@ jobs:
     steps:
       - attach_workspace:
           at: .
+      - run:
+          name: Check Tagged Push
+          command: |
+            PKG_VERSION=$(cat ./package.json | grep version | cut -d':' -f2 | cut -d '"' -f2)
+            if [[ "${CIRCLE_TAG}" != "v${PKG_VERSION}" ]]; then
+              echo "There is mismatch:"
+              echo "  TAG_VERSION: ${CIRCLE_TAG}"
+              echo "  PKG_VERSION: v${PKG_VERSION}"
+              exit 1
+            fi
       - run: go get -u github.com/tcnksm/ghr
       - run:
           name: Create a Release
