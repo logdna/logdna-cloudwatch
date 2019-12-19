@@ -50,7 +50,7 @@ jobs:
           root: .
           paths:
             - ./logdna-cloudwatch.zip
-  publish:
+  release:
     docker:
       - image: circleci/golang:1.12
     steps:
@@ -80,7 +80,7 @@ workflows:
           requires:
             - build
           filters: *tagged_build_filters
-      - publish:
+      - release:
           requires:
             - approve
           filters: *tagged_build_filters
