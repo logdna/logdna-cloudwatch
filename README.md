@@ -12,7 +12,7 @@ The LogDNA AWS CloudWatch integration relies on [AWS Lambda](https://aws.amazon.
  * Runtime: `Node.js.10.x`
 3. Click on the lambda function to edit the details
  * Code entry type: `Upload a .ZIP file `
- * Upload our LogDNA Lambda function [.ZIP File](https://s3.amazonaws.com/repo.logdna.com/integrations/lambdas/logdna-cloudwatch.zip)
+ * Upload our LogDNA Lambda function [.ZIP File](https://github.com/logdna/logdna-cloudwatch/releases/latest/download/logdna-cloudwatch.zip)
  * Handler: `index.handler`
  * Runtime: `Node.js.10.x`
  * Environment variables: 
