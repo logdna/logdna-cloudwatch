@@ -2,6 +2,9 @@
 
 This file documents all notable changes in `LogDNA CloudWatch Lambda Function`. The release numbering uses [semantic versioning](http://semver.org).
 
+## v2.2.0 - Released on June 9, 2020
+* Add `LOG_RAW_EVENT` environment variable option to set `line` to raw `event.message`
+
 ## v2.1.0 - Released on November 14, 2019
 * Update retry mechanism
 * Remove message truncation

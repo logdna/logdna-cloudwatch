@@ -20,6 +20,13 @@ The LogDNA AWS CloudWatch integration relies on [AWS Lambda](https://aws.amazon.
     * `LOGDNA_HOSTNAME`: Alternative Host Name *(Optional)*  
     * `LOGDNA_TAGS`: Comma-separated Tags *(Optional)*  
     * `LOGDNA_URL`: Custom Ingestion URL *(Optional)*
+    * `LOG_RAW_EVENT`: Setting `line` to Raw `event.message` *(Optional, Default: false)*:
+        * It can be enabled by setting `LOG_RAW_EVENT` to `YES` or `TRUE`
+        * Enabling it moves the following `event`-related `meta` data from the `line` field to the `meta` field:
+            * `event.type`: `messageType` of `CloudWatch Log` encoded inside `awslogs.data` in `base64`
+            * `event.id`: `id` of each `CloudWatch Log` encoded inside `awslogs.data` in `base64`
+            * `log.group`: `LogGroup` where the log is coming from
+            * `log.stream`: `LogStream` where the log is coming from
 4. For Execution role, assign an [IAM user with basic execution permissions](https://docs.aws.amazon.com/IAM/latest/UserGuide/getting-started_create-admin-group.html) by choosing an existing role and selecting a role that has permissions to upload logs to Amazon CloudWatch logs.
 
 ### Configure your AWS CloudWatch Log Group

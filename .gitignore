@@ -14,3 +14,4 @@ node_modules
 # No Testing Materials
 data
 generateData.js
+.nyc*
