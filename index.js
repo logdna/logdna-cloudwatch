@@ -86,7 +86,8 @@ const sendLine = (payload, config, callback) => {
     if (!config.key) return callback('Missing LogDNA Ingestion Key');
 
     // Set Hostname
-    const hostname = config.hostname || JSON.parse(payload[0].line).log.group;
+    const logGroup = config.log_raw_event ? payload[0].meta.log.group : JSON.parse(payload[0].line).log.group;
+    const hostname = config.hostname || logGroup;
 
     // Prepare HTTP Request Options
     const options = {
