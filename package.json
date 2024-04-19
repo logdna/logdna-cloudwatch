@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "lint": "./node_modules/.bin/eslint -c .eslintrc index.js",
-    "test": "tap"
+    "package": "tools/package.sh",
+    "test": "tap",
+    "release": "semantic-release",
+    "release:dry": "npm run release -- --dry-run --no-ci --branches ${BRANCH_NAME:-master}"
   },
   "dependencies": {
     "agentkeepalive": "^4.0.2",
@@ -13,6 +16,9 @@
     "request": "^2.88.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^9.1.2",
+    "@commitlint/config-conventional": "^12.1.1",
+    "@semantic-release/github": "^7.2.1",
     "eslint": "^6.7.2",
     "tap": "^14.10.7"
   },
@@ -24,7 +30,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/logdna/logdna-cloudwatch.git"
+    "url": "git+https://github.com/logdna/logdna-cloudwatch.git"
   },
   "author": "LogDNA",
   "license": "MIT",
