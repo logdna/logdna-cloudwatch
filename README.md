@@ -1,5 +1,3 @@
-[![CircleCI](https://circleci.com/gh/logdna/logdna-cloudwatch.svg?style=svg)](https://circleci.com/gh/logdna/logdna-cloudwatch)
-
 # LogDNA CloudWatch Lambda Function
 
 The LogDNA AWS CloudWatch integration relies on [AWS Lambda](https://aws.amazon.com/documentation/lambda/) to route your [CloudWatch Logs](http://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html) to LogDNA.
@@ -11,7 +9,7 @@ The LogDNA AWS CloudWatch integration relies on [AWS Lambda](https://aws.amazon.
  * Code entry type: `Upload a .ZIP file`
  * Upload our LogDNA Lambda function [.ZIP File](https://github.com/logdna/logdna-cloudwatch/releases/latest/download/logdna-cloudwatch.zip).
  * Handler: `index.handler`
- * Runtime: `Node.js 16.x`
+ * Runtime: `Node.js 20.x`
 
 ### Configuration
 #### General Configuration
